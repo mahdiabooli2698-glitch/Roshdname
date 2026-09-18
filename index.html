@@ -373,15 +373,7 @@
         <div></div>
       </div>
       <div class="card p-4 space-y-3">
-        <div class="flex gap-2">
-          <input type="text" id="new-subject-name" class="flex-1 border rounded-xl p-2.5" placeholder="نام درس را بنویس" />
-          <select id="new-subject-icon" class="border rounded-xl p-2.5 w-20 text-center text-xl">
-            <option>📚</option><option>🧮</option><option>🔬</option><option>🧪</option>
-            <option>📖</option><option>✍️</option><option>🌍</option><option>💻</option>
-            <option>🎨</option><option>🎵</option><option>⚙️</option><option>🧠</option>
-            <option>📝</option><option>📐</option><option>💡</option><option>🔤</option>
-          </select>
-        </div>
+        <input type="text" id="new-subject-name" class="w-full border rounded-xl p-2.5" placeholder="نام درس را بنویس" />
         <button onclick="addSubject()" class="w-full bg-primary-600 text-white py-2.5 rounded-xl font-medium">افزودن درس</button>
       </div>
       <div id="subjects-list" class="space-y-2"></div>
@@ -793,7 +785,7 @@ function showPage(name){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
-  if(name==='home'){renderCalendar();updateStreakUI();updateHeader();renderDailyQuote();renderHomeBudget();}
+  if(name==='home'){goToCurrentMonth();updateStreakUI();updateHeader();renderDailyQuote();renderHomeBudget();}
   if(name==='todos')renderTodos();
   if(name==='subjects')renderSubjects();
   if(name==='mistakes')renderMistakes();
@@ -818,22 +810,47 @@ function openReport(key){
   loadReportToForm(key);updateLiveAvgs();showPage('report');
 }
 function changeMonth(delta){let {jy,jm}=state.currentMonth;jm+=delta;if(jm>12){jm=1;jy++;}if(jm<1){jm=12;jy--;}state.currentMonth={jy,jm};renderCalendar();}
+function isReportMeaningful(r){
+  if(!r||typeof r!=='object') return false;
+  if((r.diary||'').trim()) return true;
+  if(r.income||r.expense||r.savings) return true;
+  if(getStudyMinutes(r)>0) return true;
+  if((r.bookName||'').trim()||(r.nonStudy||0)>0) return true;
+  if((r.exerciseType||'').trim()||(r.exercise||0)>0) return true;
+  if((r.sleepH||0)>0||(r.sleepQ||0)>0) return true;
+  if((r.calories||0)>0) return true;
+  if(getTradeMinutes(r)>0||(r.tradeEdu||'').trim()||(r.tradeBacktest||'').trim()||(r.tradeHistory||'').trim()) return true;
+  if((r.gratitude||'').trim()||(r.prayer||'').trim()) return true;
+  const p=r.plans||{};
+  if((p[0]||'').trim()||(p[6]||'').trim()||(p[12]||'').trim()||(p[18]||'').trim()) return true;
+  if((r.studies||[]).some(s=>((s.subjectName||s.name||'').trim())||(s.tests||0)||(s.notes||'').trim())) return true;
+  return false;
+}
 function renderCalendar(){
+  // همیشه ماه جاری را با امروز هم‌تراز نگه دار مگر کاربر با فلش جابه‌جا کرده باشد
   const {jy,jm}=state.currentMonth;
   document.getElementById('cal-title-jalali').textContent=`${JALALI_MONTHS[jm-1]} ${jy}`;
   const [gy1,gm1]=jalaliToGregorian(jy,jm,1);const len=jalaliMonthLength(jy,jm);const [gy2,gm2]=jalaliToGregorian(jy,jm,len);
   document.getElementById('cal-title-greg').textContent=`${GREG_MONTHS[gm1-1]} – ${GREG_MONTHS[gm2-1]} ${gy1}`;
   const firstGreg=jalaliToGregorian(jy,jm,1);const firstDate=new Date(firstGreg[0],firstGreg[1]-1,firstGreg[2]);
+  // شنبه = شروع هفته شمسی (getDay: 0=یکشنبه ... 6=شنبه) → offset از شنبه
   let startOffset=(firstDate.getDay()+1)%7;
   const grid=document.getElementById('calendar-grid');grid.innerHTML='';
   for(let i=0;i<startOffset;i++) grid.innerHTML+='<div class="day-cell"></div>';
   const today=todayKey();
   for(let d=1;d<=len;d++){
     const [gy,gm,gd]=jalaliToGregorian(jy,jm,d);const key=toKey(gy,gm,gd);
-    const has=!!state.reports[key];const isToday=key===today;
-    const cls=`day-cell rounded-lg flex flex-col items-center justify-center text-sm cursor-pointer hover:bg-primary-100 ${has?'has-data':''} ${isToday?'ring-2 ring-primary-600':''}`;
-    grid.innerHTML+=`<div class="${cls}" onclick="openReport('${key}')"><span class="font-medium">${d}</span>${has?'<span class="text-[10px] text-primary-600">●</span>':''}</div>`;
+    const has=isReportMeaningful(state.reports[key]);
+    const isToday=key===today;
+    const cls=`day-cell rounded-lg flex flex-col items-center justify-center text-sm cursor-pointer hover:bg-primary-100 ${has?'has-data':''} ${isToday?'ring-2 ring-primary-600 bg-primary-50':''}`;
+    grid.innerHTML+=`<div class="${cls}" onclick="openReport('${key}')" role="button" tabindex="0"><span class="font-medium">${d}</span>${has?'<span class="text-[10px] text-primary-600">●</span>':''}</div>`;
   }
+}
+function goToCurrentMonth(){
+  const n=new Date();
+  const [jy,jm]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());
+  state.currentMonth={jy,jm};
+  renderCalendar();
 }
 
 function addStudyRow(data){
@@ -936,7 +953,7 @@ function ensureSubjectsFromStudies(studies){
     if(!name) return;
     const exists=state.subjects.some(x=>(x.name||'').trim().replace(/\s+/g,' ')===name);
     if(!exists){
-      state.subjects.push({id:Date.now().toString()+Math.random().toString(36).slice(2,6),name,icon:'📚'});
+      state.subjects.push({id:Date.now().toString()+Math.random().toString(36).slice(2,6),name});
       changed=true;
     }
   });
@@ -945,8 +962,13 @@ function ensureSubjectsFromStudies(studies){
 function saveReportSilent(){
   if(!state.currentReportKey) return false;
   const report=collectReport();
-  state.reports[state.currentReportKey]=report;
-  ensureSubjectsFromStudies(report.studies);
+  if(isReportMeaningful(report)){
+    state.reports[state.currentReportKey]=report;
+    ensureSubjectsFromStudies(report.studies);
+  } else {
+    // گزارش خالی را نگه ندار تا تقویم روی روزهای قبلی «گیر» نکند
+    delete state.reports[state.currentReportKey];
+  }
   save();
   updateStreakUI();
   const st=document.getElementById('auto-save-status');
@@ -1087,9 +1109,8 @@ function renderTodos(){
 /* SUBJECTS */
 function addSubject(){
   const name=document.getElementById('new-subject-name').value.trim();
-  const icon=document.getElementById('new-subject-icon').value;
   if(!name) return alert('نام درس را وارد کنید');
-  state.subjects.push({id:Date.now().toString(),name,icon});
+  state.subjects.push({id:Date.now().toString(),name});
   save();document.getElementById('new-subject-name').value='';renderSubjects();
 }
 function startEditSubject(id){
@@ -1109,7 +1130,7 @@ function renderSubjects(){
   if(!state.subjects.length){list.innerHTML='<div class="text-center text-slate-400 py-6">هنوز درسی اضافه نکرده‌اید</div>';return;}
   list.innerHTML=state.subjects.map(s=>`
     <div class="card p-3 flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2 text-lg flex-1">${s.icon} <span class="font-medium">${s.name}</span></div>
+      <div class="flex-1 font-medium text-base">${s.name}</div>
       <button onclick="startEditSubject('${s.id}')" class="text-primary-600 text-sm px-2">ویرایش</button>
       <button onclick="deleteSubject('${s.id}')" class="text-red-400 text-sm">حذف</button>
     </div>
@@ -1838,9 +1859,19 @@ function updateHeader(){
 
 /* BOOT */
 load();
+// پاک‌سازی گزارش‌های خالی قدیمی که تقویم را روی روزهای قبلی گیر می‌انداختند
+(function purgeEmptyReports(){
+  let changed=false;
+  Object.keys(state.reports||{}).forEach(k=>{
+    if(!isReportMeaningful(state.reports[k])){ delete state.reports[k]; changed=true; }
+  });
+  // حذف فیلد icon از درس‌های قدیمی
+  (state.subjects||[]).forEach(s=>{ if('icon' in s) delete s.icon; });
+  if(changed) saveLocalOnly();
+})();
 resetRepeatingTodos();
 updateHeader();
-renderCalendar();
+goToCurrentMonth();
 updateStreakUI();
 renderDailyQuote();
 renderHomeBudget();
