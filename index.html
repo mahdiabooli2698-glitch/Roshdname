@@ -5,10 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0f766e" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="رُشدنامه" />
   <meta name="application-name" content="رُشدنامه" />
-  <link rel="manifest" href="manifest.json" />
   <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="format-detection" content="telephone=no" />
+  <link rel="manifest" href="manifest.json" />
   <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png" />
   <link rel="apple-touch-icon" href="icons/icon-192.png" />
 
@@ -140,17 +142,36 @@
 
     <!-- HOME -->
     <div id="page-home" class="tab-content active space-y-4">
-      <div class="card p-4 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="text-3xl" id="streak-icon">🔥</div>
-          <div>
-            <div class="text-sm text-slate-500">استریک مطالعاتی (فقط درس)</div>
-            <div class="text-xl font-bold text-primary-700"><span id="streak-count">0</span> روز</div>
+      <div class="card p-4 space-y-3">
+        <div class="flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="text-3xl" id="streak-icon">🔥</div>
+            <div>
+              <div class="text-sm text-slate-500">استریک مطالعه درسی</div>
+              <div class="text-xl font-bold text-primary-700"><span id="streak-count">0</span> روز</div>
+            </div>
+          </div>
+          <div class="text-left text-sm space-y-0.5">
+            <div>میانگین هفته: <b id="avg-week-study">۰</b> دقیقه</div>
+            <div>میانگین ماه: <b id="avg-month-study">۰</b> دقیقه</div>
           </div>
         </div>
-        <div class="text-left text-sm space-y-0.5">
-          <div>میانگین هفته: <b id="avg-week-study">۰</b> دقیقه</div>
-          <div>میانگین ماه: <b id="avg-month-study">۰</b> دقیقه</div>
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-indigo-50 rounded-xl p-2 border border-indigo-100">
+            <div class="text-lg" id="streak-non-icon">📘</div>
+            <div class="text-[10px] text-indigo-600">غیردرسی</div>
+            <div class="font-bold text-indigo-800 text-sm"><span id="streak-non">0</span> روز</div>
+          </div>
+          <div class="bg-orange-50 rounded-xl p-2 border border-orange-100">
+            <div class="text-lg" id="streak-ex-icon">🏃</div>
+            <div class="text-[10px] text-orange-600">ورزش</div>
+            <div class="font-bold text-orange-800 text-sm"><span id="streak-ex">0</span> روز</div>
+          </div>
+          <div class="bg-emerald-50 rounded-xl p-2 border border-emerald-100">
+            <div class="text-lg" id="streak-trade-icon">📈</div>
+            <div class="text-[10px] text-emerald-600">ترید</div>
+            <div class="font-bold text-emerald-800 text-sm"><span id="streak-trade">0</span> روز</div>
+          </div>
         </div>
       </div>
 
@@ -196,9 +217,12 @@
     <!-- REPORT -->
     <div id="page-report" class="tab-content space-y-4">
       <div class="flex items-center justify-between">
-        <button onclick="showPage('home')" class="text-primary-700 font-medium">← بازگشت</button>
+        <button onclick="saveReportSilent();showPage('home')" class="text-primary-700 font-medium">← بازگشت</button>
         <h2 class="font-bold text-lg" id="report-date-title">گزارش روزانه</h2>
-        <button onclick="saveReport()" class="bg-primary-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium">ذخیره</button>
+        <div class="flex items-center gap-2">
+          <span id="auto-save-status" class="text-[10px] text-slate-400">ذخیره خودکار</span>
+          <button onclick="saveReport()" class="bg-primary-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium">ذخیره و بازگشت</button>
+        </div>
       </div>
 
       <div class="card p-3 bg-gradient-to-l from-primary-50 to-white border border-primary-100">
@@ -299,7 +323,8 @@
         <textarea id="r-prayer" rows="2" class="w-full border rounded-lg p-2 text-sm" placeholder="مناجات..."></textarea>
       </div>
 
-      <button onclick="saveReport()" class="w-full bg-primary-600 text-white py-3 rounded-xl font-bold text-lg">💾 ذخیره گزارش</button>
+      <button onclick="saveReport()" class="w-full bg-primary-600 text-white py-3 rounded-xl font-bold text-lg">💾 ذخیره و بازگشت</button>
+      <p class="text-center text-[11px] text-slate-400 -mt-2">تغییرات به‌صورت خودکار ذخیره می‌شوند؛ نیازی به فیلترشکن نیست.</p>
     </div>
 
     <!-- TODOS -->
@@ -454,6 +479,11 @@
           <label class="text-xs text-slate-500">هدف دخل ماهانه (تومان)</label>
           <input type="number" id="budget-income-goal" class="w-full border rounded-lg p-2 text-sm mt-1" min="0" placeholder="مثلاً ۲۰۰۰۰۰۰۰" />
         </div>
+        <div>
+          <label class="text-xs text-slate-500">💎 ارزش کل پس‌انداز (تومان) — خودت حساب کن و بنویس</label>
+          <input type="number" id="budget-savings-value" class="w-full border rounded-lg p-2 text-sm mt-1" min="0" placeholder="مثلاً ارزش فعلی پس‌انداز/سرمایه" />
+          <p class="text-[10px] text-slate-400 mt-1">این عدد جدا از «پس‌انداز ماهانه» است؛ ارزش واقعی دارایی پس‌اندازت را اینجا نگه می‌داری.</p>
+        </div>
         <button onclick="saveBudget()" class="w-full bg-primary-600 text-white py-2.5 rounded-xl font-medium">ذخیره بودجه</button>
         <p class="text-[11px] text-slate-400">اگر صفر بگذاری، آن مورد در گزارش بودجه نادیده گرفته می‌شود.</p>
       </div>
@@ -548,7 +578,7 @@ function formatBoth(gy,gm,gd){const [jy,jm,jd]=gregorianToJalali(gy,gm,gd);retur
 
 /* ========== STATE ========== */
 const STORAGE_KEY='lifeJournal_v4';
-let state={subjects:[],reports:{},todos:[],profile:{name:'',id:''},budget:{expenseLimit:0,savingsGoal:0,incomeGoal:0},currentMonth:{jy:0,jm:0},currentReportKey:null};
+let state={subjects:[],reports:{},todos:[],profile:{name:'',id:''},budget:{expenseLimit:0,savingsGoal:0,incomeGoal:0,savingsValue:0},currentMonth:{jy:0,jm:0},currentReportKey:null};
 
 function load(){
   try{
@@ -559,7 +589,7 @@ function load(){
       state.reports=d.reports||{};
       state.todos=d.todos||[];
       state.profile=d.profile||{name:'',id:''};
-      state.budget=d.budget||{expenseLimit:0,savingsGoal:0,incomeGoal:0};
+      state.budget=Object.assign({expenseLimit:0,savingsGoal:0,incomeGoal:0,savingsValue:0},d.budget||{});
     }
   }catch(e){}
   const n=new Date();const [jy,jm]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());
@@ -755,6 +785,11 @@ async function afterLogin(){
 
 /* ========== UI CORE ========== */
 function showPage(name){
+  // اگر از گزارش خارج می‌شویم، قبلش ذخیره کن
+  const wasReport=document.getElementById('page-report')&&document.getElementById('page-report').classList.contains('active');
+  if(wasReport && name!=='report' && state.currentReportKey){
+    try{saveReportSilent();}catch(e){}
+  }
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
@@ -771,6 +806,7 @@ function showPage(name){
     document.getElementById('budget-expense-limit').value=b.expenseLimit||'';
     document.getElementById('budget-savings-goal').value=b.savingsGoal||'';
     document.getElementById('budget-income-goal').value=b.incomeGoal||'';
+    const sv=document.getElementById('budget-savings-value'); if(sv) sv.value=b.savingsValue||'';
     updateAuthUI();
   }
 }
@@ -852,6 +888,22 @@ function loadReportToForm(key){
   document.getElementById('r-plan-12').value=(r.plans&&r.plans[12])||'';document.getElementById('r-plan-18').value=(r.plans&&r.plans[18])||'';
   const container=document.getElementById('study-rows');container.innerHTML='';
   const studies=r.studies||[];if(studies.length===0)addStudyRow();else studies.forEach(s=>addStudyRow(s));calcTotalStudy();
+  bindReportAutoSave();
+}
+function bindReportAutoSave(){
+  const page=document.getElementById('page-report');
+  if(!page||page.dataset.bound==='1') return;
+  page.dataset.bound='1';
+  page.addEventListener('input', (e)=>{
+    if(e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')){
+      scheduleAutoSave();
+    }
+  });
+  page.addEventListener('change', (e)=>{
+    if(e.target && (e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')){
+      scheduleAutoSave();
+    }
+  });
 }
 function collectReport(){
   const studies=[];
@@ -875,11 +927,43 @@ function collectReport(){
     updatedAt:new Date().toISOString()
   };
 }
-function saveReport(){
-  if(!state.currentReportKey)return;
-  state.reports[state.currentReportKey]=collectReport();
+let autoSaveTimer=null;
+function ensureSubjectsFromStudies(studies){
+  if(!studies||!studies.length) return;
+  let changed=false;
+  studies.forEach(s=>{
+    const name=(s.subjectName||s.name||'').trim().replace(/\s+/g,' ');
+    if(!name) return;
+    const exists=state.subjects.some(x=>(x.name||'').trim().replace(/\s+/g,' ')===name);
+    if(!exists){
+      state.subjects.push({id:Date.now().toString()+Math.random().toString(36).slice(2,6),name,icon:'📚'});
+      changed=true;
+    }
+  });
+  return changed;
+}
+function saveReportSilent(){
+  if(!state.currentReportKey) return false;
+  const report=collectReport();
+  state.reports[state.currentReportKey]=report;
+  ensureSubjectsFromStudies(report.studies);
   save();
   updateStreakUI();
+  const st=document.getElementById('auto-save-status');
+  if(st){st.textContent='ذخیره شد ✓';st.classList.remove('text-slate-400');st.classList.add('text-green-600');
+    setTimeout(()=>{st.textContent='ذخیره خودکار';st.classList.add('text-slate-400');st.classList.remove('text-green-600');},1500);
+  }
+  return true;
+}
+function scheduleAutoSave(){
+  clearTimeout(autoSaveTimer);
+  const st=document.getElementById('auto-save-status');
+  if(st){st.textContent='در حال ذخیره…';st.classList.remove('text-green-600');st.classList.add('text-slate-400');}
+  autoSaveTimer=setTimeout(()=>{saveReportSilent();},600);
+}
+function saveReport(){
+  if(!state.currentReportKey)return;
+  saveReportSilent();
   alert('گزارش ذخیره شد ✅');
   showPage('home');
 }
@@ -899,23 +983,49 @@ function calcAverages(){
   return{avgWeekStudy:weekDays?Math.round(weekStudy/weekDays):0,avgMonthStudy:monthDays?Math.round(monthStudy/monthDays):0,avgMonthEx:monthDays?Math.round(monthEx/monthDays):0,avgMonthTrade:monthDays?Math.round(monthTrade/monthDays):0};
 }
 function updateLiveAvgs(){
+  if(!document.getElementById('page-report')||!document.getElementById('page-report').classList.contains('active')){
+    // only compute averages from existing state
+  } else {
+    scheduleAutoSave();
+  }
   const temp=collectReport();const key=state.currentReportKey||todayKey();const backup=state.reports[key];
   state.reports[key]=temp;const av=calcAverages();if(backup)state.reports[key]=backup;else delete state.reports[key];
-  document.getElementById('live-avg-week').textContent=av.avgWeekStudy;document.getElementById('live-avg-month').textContent=av.avgMonthStudy;
-  document.getElementById('live-avg-ex-month').textContent=av.avgMonthEx;document.getElementById('live-avg-trade-month').textContent=av.avgMonthTrade;
-  document.getElementById('avg-week-study').textContent=av.avgWeekStudy;document.getElementById('avg-month-study').textContent=av.avgMonthStudy;
+  const el=id=>{const e=document.getElementById(id);return e;};
+  if(el('live-avg-week')) el('live-avg-week').textContent=av.avgWeekStudy;
+  if(el('live-avg-month')) el('live-avg-month').textContent=av.avgMonthStudy;
+  if(el('live-avg-ex-month')) el('live-avg-ex-month').textContent=av.avgMonthEx;
+  if(el('live-avg-trade-month')) el('live-avg-trade-month').textContent=av.avgMonthTrade;
+  if(el('avg-week-study')) el('avg-week-study').textContent=av.avgWeekStudy;
+  if(el('avg-month-study')) el('avg-month-study').textContent=av.avgMonthStudy;
 }
-function calcStreak(){
+function calcStreakBy(fn){
   let streak=0;const n=new Date();
   for(let i=0;i<400;i++){
     const d=new Date(n);d.setDate(d.getDate()-i);
     const key=toKey(d.getFullYear(),d.getMonth()+1,d.getDate());
-    if(getStudyMinutes(state.reports[key])>0) streak++;
+    if(fn(state.reports[key])) streak++;
     else if(i>0) break;
   }
   return streak;
 }
-function updateStreakUI(){const s=calcStreak();document.getElementById('streak-count').textContent=s;document.getElementById('streak-icon').textContent=s>=7?'🔥':s>=3?'✨':'🌱';updateLiveAvgs();}
+function calcStreak(){return calcStreakBy(r=>getStudyMinutes(r)>0);}
+function calcNonStudyStreak(){return calcStreakBy(r=>r&&(r.nonStudy||0)>0);}
+function calcExerciseStreak(){return calcStreakBy(r=>r&&(r.exercise||0)>0);}
+function calcTradeStreak(){return calcStreakBy(r=>getTradeMinutes(r)>0);}
+function streakEmoji(s){return s>=7?'🔥':s>=3?'✨':'🌱';}
+function updateStreakUI(){
+  const s=calcStreak();
+  document.getElementById('streak-count').textContent=s;
+  document.getElementById('streak-icon').textContent=streakEmoji(s);
+  const sn=calcNonStudyStreak(), se=calcExerciseStreak(), st=calcTradeStreak();
+  const elN=document.getElementById('streak-non'); if(elN) elN.textContent=sn;
+  const elE=document.getElementById('streak-ex'); if(elE) elE.textContent=se;
+  const elT=document.getElementById('streak-trade'); if(elT) elT.textContent=st;
+  const iN=document.getElementById('streak-non-icon'); if(iN) iN.textContent=sn>=3?'📘':'📖';
+  const iE=document.getElementById('streak-ex-icon'); if(iE) iE.textContent=se>=3?'🏃':'🚶';
+  const iT=document.getElementById('streak-trade-icon'); if(iT) iT.textContent=st>=3?'📈':'📉';
+  updateLiveAvgs();
+}
 function updateProfileBadge(){if(!currentUser) document.getElementById('profile-badge').textContent=state.profile.name||'مهمان';}
 
 /* TODOS */
@@ -931,14 +1041,40 @@ function addTodo(){
   state.todos.unshift({id:Date.now().toString(),text,done:false,jDate,time:hasDate?document.getElementById('todo-time').value:null,repeat,created:new Date().toISOString()});
   save();document.getElementById('todo-text').value='';document.getElementById('todo-has-date').checked=false;toggleTodoDate();document.getElementById('todo-repeat').checked=false;toggleTodoRepeat();renderTodos();
 }
+function todayISODate(){
+  const n=new Date();
+  return toKey(n.getFullYear(),n.getMonth()+1,n.getDate());
+}
+function resetRepeatingTodos(){
+  const today=todayISODate();
+  let changed=false;
+  state.todos.forEach(t=>{
+    if(!t.repeat||!t.done) return;
+    const last=t.lastDoneDate||'';
+    if(t.repeat==='daily' && last && last!==today){
+      t.done=false;
+      changed=true;
+    } else if(t.repeat==='weekly' && last){
+      const lastD=new Date(last); const now=new Date();
+      const diffDays=Math.floor((now-lastD)/(86400000));
+      if(diffDays>=7){t.done=false;changed=true;}
+    } else if(t.repeat==='monthly' && last){
+      const lastD=new Date(last); const now=new Date();
+      if(now.getFullYear()>lastD.getFullYear()||now.getMonth()>lastD.getMonth()){t.done=false;changed=true;}
+    }
+  });
+  if(changed) saveLocalOnly();
+}
 function toggleTodo(id){
   const t=state.todos.find(x=>x.id===id);if(!t)return;
   t.done=!t.done;
-  // روتین‌ها بعد از تیک‌خوردن آمادهٔ تکرار بعدی می‌مانند (done ذخیره می‌شود تا آمار داشته باشیم)
+  if(t.done) t.lastDoneDate=todayISODate();
+  else t.lastDoneDate=null;
   save();renderTodos();
 }
 function deleteTodo(id){state.todos=state.todos.filter(x=>x.id!==id);save();renderTodos();}
 function renderTodos(){
+  resetRepeatingTodos();
   const list=document.getElementById('todo-list');
   if(!state.todos.length){list.innerHTML='<div class="text-center text-slate-400 py-8">هنوز کاری ثبت نشده</div>';return;}
   list.innerHTML=state.todos.map(t=>{
@@ -1242,10 +1378,21 @@ function financeBlockHTML(data, fin) {
             <div class="font-bold text-red-700 text-base leading-tight">${moneyFa(expense)}</div>
           </div>
           <div class="bg-blue-50 rounded-xl p-2.5 text-center border border-blue-100">
-            <div class="text-[11px] text-blue-600">پس‌انداز</div>
+            <div class="text-[11px] text-blue-600">پس‌انداز این دوره</div>
             <div class="font-bold text-blue-800 text-base leading-tight">${moneyFa(savings)}</div>
           </div>
         </div>
+        ${(() => {
+          const sv = (getBudget().savingsValue)||0;
+          if(!sv) return `<div class="text-[11px] text-slate-400 text-center">💎 ارزش کل پس‌انداز را در تنظیمات وارد کن</div>`;
+          return `<div class="rounded-xl bg-violet-50 border border-violet-100 p-3 flex items-center justify-between gap-2">
+            <div>
+              <div class="text-[11px] text-violet-600">💎 ارزش کل پس‌انداز (محاسبهٔ خودت)</div>
+              <div class="text-lg font-bold text-violet-800">${moneyFa(sv)}</div>
+            </div>
+            <button type="button" onclick="showPage('settings')" class="text-[10px] text-violet-600 underline shrink-0">ویرایش</button>
+          </div>`;
+        })()}
         <div class="rounded-xl bg-slate-50 border border-slate-100 p-3 flex items-center justify-between gap-2">
           <div>
             <div class="text-[11px] text-slate-500">خالص این دوره (دخل − خرج)</div>
@@ -1307,7 +1454,7 @@ function yearlyFinanceSmartHTML(jy, monthsData) {
         <div class="text-sm font-bold text-primary-800">🧠 گزارش هوشمند مالی سال ${jy}</div>
         <span class="text-[10px] bg-primary-100 text-primary-700 px-2 py-0.5 rounded-full">${monthsWithData} ماه دارای داده</span>
       </div>
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
         <div class="bg-white rounded-xl p-2.5 border border-green-100 text-center">
           <div class="text-[10px] text-green-600">جمع دخل سال</div>
           <div class="font-bold text-green-800">${moneyFa(totIn)}</div>
@@ -1317,8 +1464,12 @@ function yearlyFinanceSmartHTML(jy, monthsData) {
           <div class="font-bold text-red-700">${moneyFa(totEx)}</div>
         </div>
         <div class="bg-white rounded-xl p-2.5 border border-blue-100 text-center">
-          <div class="text-[10px] text-blue-600">جمع پس‌انداز</div>
+          <div class="text-[10px] text-blue-600">جمع پس‌انداز سال</div>
           <div class="font-bold text-blue-800">${moneyFa(totSav)}</div>
+        </div>
+        <div class="bg-white rounded-xl p-2.5 border border-violet-100 text-center">
+          <div class="text-[10px] text-violet-600">💎 ارزش کل پس‌انداز</div>
+          <div class="font-bold text-violet-800">${moneyFa((getBudget().savingsValue)||0)}</div>
         </div>
         <div class="bg-white rounded-xl p-2.5 border border-slate-200 text-center">
           <div class="text-[10px] text-slate-500">خالص سال</div>
@@ -1598,7 +1749,8 @@ function saveBudget(){
   state.budget={
     expenseLimit:parseInt(document.getElementById('budget-expense-limit').value)||0,
     savingsGoal:parseInt(document.getElementById('budget-savings-goal').value)||0,
-    incomeGoal:parseInt(document.getElementById('budget-income-goal').value)||0
+    incomeGoal:parseInt(document.getElementById('budget-income-goal').value)||0,
+    savingsValue:parseInt(document.getElementById('budget-savings-value').value)||0
   };
   save();
   renderHomeBudget();
@@ -1686,6 +1838,7 @@ function updateHeader(){
 
 /* BOOT */
 load();
+resetRepeatingTodos();
 updateHeader();
 renderCalendar();
 updateStreakUI();
@@ -1693,6 +1846,17 @@ renderDailyQuote();
 renderHomeBudget();
 showPage('home');
 setupAuth();
+// ذخیره خودکار قبل از بستن/مخفی شدن صفحه
+window.addEventListener('beforeunload', ()=>{
+  if(state.currentReportKey && document.getElementById('page-report')&&document.getElementById('page-report').classList.contains('active')){
+    try{saveReportSilent();}catch(e){}
+  }
+});
+document.addEventListener('visibilitychange', ()=>{
+  if(document.visibilityState==='hidden' && state.currentReportKey && document.getElementById('page-report')&&document.getElementById('page-report').classList.contains('active')){
+    try{saveReportSilent();}catch(e){}
+  }
+});
 
 /* PWA service worker */
 if ('serviceWorker' in navigator) {
