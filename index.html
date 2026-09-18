@@ -230,10 +230,14 @@
       <div class="card p-3 bg-gradient-to-l from-primary-50 to-white border border-primary-100">
         <div class="text-xs text-primary-700 font-medium mb-1">📈 انگیزه زنده</div>
         <div class="grid grid-cols-2 gap-2 text-sm">
-          <div>مطالعه هفته: <b id="live-avg-week">۰</b> دقیقه</div>
-          <div>مطالعه ماه: <b id="live-avg-month">۰</b> دقیقه</div>
-          <div>ورزش ماه: <b id="live-avg-ex-month">۰</b> دقیقه</div>
-          <div>ترید ماه: <b id="live-avg-trade-month">۰</b> دقیقه</div>
+          <div>مطالعه هفته: <b id="live-avg-week">۰</b> د</div>
+          <div>مطالعه ماه: <b id="live-avg-month">۰</b> د</div>
+          <div>غیردرسی هفته: <b id="live-avg-non-week">۰</b> د</div>
+          <div>غیردرسی ماه: <b id="live-avg-non-month">۰</b> د</div>
+          <div>ورزش هفته: <b id="live-avg-ex-week">۰</b> د</div>
+          <div>ورزش ماه: <b id="live-avg-ex-month">۰</b> د</div>
+          <div>ترید هفته: <b id="live-avg-trade-week">۰</b> د</div>
+          <div>ترید ماه: <b id="live-avg-trade-month">۰</b> د</div>
         </div>
       </div>
 
@@ -242,12 +246,35 @@
         <textarea id="r-diary" rows="3" class="w-full border rounded-xl p-3 text-sm" placeholder="امروز چی گذشت؟"></textarea>
       </div>
 
-      <div class="card p-4 space-y-3">
+      <div class="card p-4 space-y-4">
         <div class="font-medium">💰 مالی</div>
-        <div class="grid grid-cols-3 gap-2">
-          <div><label class="text-xs text-slate-500">دخل</label><input type="number" id="r-income" class="w-full border rounded-lg p-2 text-sm" min="0" placeholder="۰" oninput="updateLiveAvgs()" /></div>
-          <div><label class="text-xs text-slate-500">خرج</label><input type="number" id="r-expense" class="w-full border rounded-lg p-2 text-sm" min="0" placeholder="۰" oninput="updateLiveAvgs()" /></div>
-          <div><label class="text-xs text-slate-500">پس‌انداز</label><input type="number" id="r-savings" class="w-full border rounded-lg p-2 text-sm" min="0" placeholder="۰" oninput="updateLiveAvgs()" /></div>
+        <p class="text-[11px] text-slate-400 leading-relaxed">هر مورد را با چند کلمه بنویس؛ جمع خودکار حساب می‌شود. برای پس‌انداز: عدد مثبت = کنار گذاشتن، منفی = برداشتن از پس‌انداز.</p>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-medium text-green-700">💵 دخل</div>
+            <button type="button" onclick="addFinanceRow('income')" class="text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-lg">+ مورد</button>
+          </div>
+          <div id="fin-income-rows" class="space-y-2"></div>
+          <div class="text-left text-sm font-bold text-green-800">جمع دخل: <span id="fin-income-total">۰</span></div>
+        </div>
+
+        <div class="space-y-2 border-t pt-3">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-medium text-red-600">🧾 خرج</div>
+            <button type="button" onclick="addFinanceRow('expense')" class="text-xs bg-red-100 text-red-600 px-2.5 py-1 rounded-lg">+ مورد</button>
+          </div>
+          <div id="fin-expense-rows" class="space-y-2"></div>
+          <div class="text-left text-sm font-bold text-red-700">جمع خرج: <span id="fin-expense-total">۰</span></div>
+        </div>
+
+        <div class="space-y-2 border-t pt-3">
+          <div class="flex items-center justify-between">
+            <div class="text-sm font-medium text-blue-700">🏦 پس‌انداز (+ کنار گذاشتن / − برداشتن)</div>
+            <button type="button" onclick="addFinanceRow('savings')" class="text-xs bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg">+ مورد</button>
+          </div>
+          <div id="fin-savings-rows" class="space-y-2"></div>
+          <div class="text-left text-sm font-bold text-blue-800">خالص پس‌انداز امروز: <span id="fin-savings-total">۰</span></div>
         </div>
       </div>
 
@@ -265,15 +292,21 @@
       </div>
 
       <div class="card p-4 space-y-3">
-        <div class="font-medium">📘 مطالعه غیردرسی</div>
-        <div><label class="text-xs text-slate-500">نام کتاب</label><input type="text" id="r-book-name" class="w-full border rounded-lg p-2 text-sm mt-1" placeholder="نام کتاب" /></div>
-        <div><label class="text-xs text-slate-500">مدت (دقیقه)</label><input type="number" id="r-nonstudy" class="w-full border rounded-lg p-2 text-sm mt-1" min="0" placeholder="۰" oninput="updateLiveAvgs()" /></div>
+        <div class="flex items-center justify-between">
+          <div class="font-medium">📘 مطالعه غیردرسی</div>
+          <button type="button" onclick="addActRow('nonstudy')" class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-lg">+ مورد</button>
+        </div>
+        <div id="act-nonstudy-rows" class="space-y-2"></div>
+        <div class="text-left text-sm font-bold text-indigo-800">جمع: <span id="act-nonstudy-total">۰</span> دقیقه</div>
       </div>
 
       <div class="card p-4 space-y-3">
-        <div class="font-medium">🏃 ورزش</div>
-        <div><label class="text-xs text-slate-500">نوع ورزش</label><input type="text" id="r-exercise-type" class="w-full border rounded-lg p-2 text-sm mt-1" placeholder="نوع ورزش" /></div>
-        <div><label class="text-xs text-slate-500">مدت (دقیقه)</label><input type="number" id="r-exercise" class="w-full border rounded-lg p-2 text-sm mt-1" min="0" placeholder="۰" oninput="updateLiveAvgs()" /></div>
+        <div class="flex items-center justify-between">
+          <div class="font-medium">🏃 ورزش</div>
+          <button type="button" onclick="addActRow('exercise')" class="text-xs bg-orange-100 text-orange-700 px-2.5 py-1 rounded-lg">+ مورد</button>
+        </div>
+        <div id="act-exercise-rows" class="space-y-2"></div>
+        <div class="text-left text-sm font-bold text-orange-800">جمع: <span id="act-exercise-total">۰</span> دقیقه</div>
       </div>
 
       <div class="card p-4 space-y-3">
@@ -291,11 +324,12 @@
       </div>
 
       <div class="card p-4 space-y-3">
-        <div class="font-medium">🍎 کالری دریافتی</div>
-        <div>
-          <label class="text-xs text-slate-500">تقریبی کالری امروز (kcal)</label>
-          <input type="number" id="r-calories" class="w-full border rounded-lg p-2 text-sm mt-1" min="0" placeholder="مثلاً ۲۲۰۰" oninput="updateLiveAvgs()" />
+        <div class="flex items-center justify-between">
+          <div class="font-medium">🍎 کالری دریافتی</div>
+          <button type="button" onclick="addActRow('calories')" class="text-xs bg-amber-100 text-amber-800 px-2.5 py-1 rounded-lg">+ مورد</button>
         </div>
+        <div id="act-calories-rows" class="space-y-2"></div>
+        <div class="text-left text-sm font-bold text-amber-800">جمع: <span id="act-calories-total">۰</span> kcal</div>
       </div>
 
       <div class="card p-4 space-y-3">
@@ -572,7 +606,7 @@ function formatBoth(gy,gm,gd){const [jy,jm,jd]=gregorianToJalali(gy,gm,gd);retur
 
 /* ========== STATE ========== */
 const STORAGE_KEY='lifeJournal_v4';
-let state={subjects:[],reports:{},todos:[],profile:{name:'',id:''},budget:{expenseLimit:0,savingsGoal:0,incomeGoal:0,savingsValue:0},currentMonth:{jy:0,jm:0},currentReportKey:null};
+let state={subjects:[],reports:{},todos:[],profile:{name:'',id:''},budget:{expenseLimit:0,savingsGoal:0,incomeGoal:0,savingsValue:0},openingBalances:{},currentMonth:{jy:0,jm:0},currentReportKey:null};
 
 function load(){
   try{
@@ -584,13 +618,14 @@ function load(){
       state.todos=d.todos||[];
       state.profile=d.profile||{name:'',id:''};
       state.budget=Object.assign({expenseLimit:0,savingsGoal:0,incomeGoal:0,savingsValue:0},d.budget||{});
+      state.openingBalances=d.openingBalances||{};
     }
   }catch(e){}
   const n=new Date();const [jy,jm]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());
   state.currentMonth={jy,jm};updateProfileBadge();
 }
 function save(){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify({subjects:state.subjects,reports:state.reports,todos:state.todos,profile:state.profile,budget:state.budget,updatedAt:new Date().toISOString()}));
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({subjects:state.subjects,reports:state.reports,todos:state.todos,profile:state.profile,budget:state.budget,openingBalances:state.openingBalances||{},updatedAt:new Date().toISOString()}));
   scheduleCloudSave();
 }
 function scheduleCloudSave(){
@@ -606,6 +641,7 @@ function payload(){
     todos:state.todos,
     profile:state.profile,
     budget:state.budget,
+    openingBalances:state.openingBalances||{},
     updatedAt:new Date().toISOString()
   };
 }
@@ -617,6 +653,7 @@ function applyPayload(d){
   if(d.todos) state.todos=d.todos;
   if(d.profile) state.profile=d.profile;
   if(d.budget) state.budget=d.budget;
+  if(d.openingBalances) state.openingBalances=d.openingBalances;
   saveLocalOnly();
   updateProfileBadge();
   renderCalendar();
@@ -624,7 +661,7 @@ function applyPayload(d){
   renderHomeBudget();
 }
 function saveLocalOnly(){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify({subjects:state.subjects,reports:state.reports,todos:state.todos,profile:state.profile,budget:state.budget,updatedAt:new Date().toISOString()}));
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({subjects:state.subjects,reports:state.reports,todos:state.todos,profile:state.profile,budget:state.budget,openingBalances:state.openingBalances||{},updatedAt:new Date().toISOString()}));
 }
 
 /* ========== AUTH + CLOUD ========== */
@@ -816,9 +853,11 @@ function isReportMeaningful(r){
   if(!r||typeof r!=='object') return false;
   if((r.diary||'').trim()) return true;
   if(r.income||r.expense||r.savings) return true;
+  if((r.incomeItems&&r.incomeItems.length)||(r.expenseItems&&r.expenseItems.length)||(r.savingsItems&&r.savingsItems.length)) return true;
   if(getStudyMinutes(r)>0) return true;
-  if((r.bookName||'').trim()||(r.nonStudy||0)>0) return true;
-  if((r.exerciseType||'').trim()||(r.exercise||0)>0) return true;
+  if((r.bookName||'').trim()||(r.nonStudy||0)>0||(r.nonStudyItems&&r.nonStudyItems.length)) return true;
+  if((r.exerciseType||'').trim()||(r.exercise||0)>0||(r.exerciseItems&&r.exerciseItems.length)) return true;
+  if((r.calorieItems&&r.calorieItems.length)) return true;
   if((r.sleepH||0)>0||(r.sleepQ||0)>0) return true;
   if((r.calories||0)>0) return true;
   if(getTradeMinutes(r)>0||(r.tradeEdu||'').trim()||(r.tradeBacktest||'').trim()||(r.tradeHistory||'').trim()) return true;
@@ -895,11 +934,9 @@ function calcTotalStudy(){
 function loadReportToForm(key){
   const r=state.reports[key]||{};
   document.getElementById('r-diary').value=r.diary||'';
-  document.getElementById('r-income').value=r.income||'';document.getElementById('r-expense').value=r.expense||'';document.getElementById('r-savings').value=r.savings||'';
-  document.getElementById('r-book-name').value=r.bookName||'';document.getElementById('r-nonstudy').value=r.nonStudy||'';
-  document.getElementById('r-exercise-type').value=r.exerciseType||'';document.getElementById('r-exercise').value=r.exercise||'';
+  loadFinanceRows(r);
   document.getElementById('r-sleep-h').value=r.sleepH||'';document.getElementById('r-sleep-q').value=r.sleepQ||'';
-  document.getElementById('r-calories').value=r.calories||'';
+  loadActRows(r);
   document.getElementById('r-trade-h').value=r.tradeH||'';document.getElementById('r-trade-m').value=r.tradeM||'';
   document.getElementById('r-trade-edu').value=r.tradeEdu||'';document.getElementById('r-trade-backtest').value=r.tradeBacktest||'';document.getElementById('r-trade-history').value=r.tradeHistory||'';
   document.getElementById('r-gratitude').value=r.gratitude||'';document.getElementById('r-prayer').value=r.prayer||'';
@@ -924,6 +961,118 @@ function bindReportAutoSave(){
     }
   });
 }
+function sumFinanceRows(kind){
+  let t=0;
+  document.querySelectorAll('#fin-'+kind+'-rows .fin-row').forEach(row=>{
+    const n=parseInt(row.querySelector('.fin-amount').value);
+    if(!isNaN(n)) t+=n;
+  });
+  return t;
+}
+function collectFinanceItems(kind){
+  const items=[];
+  document.querySelectorAll('#fin-'+kind+'-rows .fin-row').forEach(row=>{
+    const desc=((row.querySelector('.fin-desc')||{}).value||'').trim();
+    const raw=(row.querySelector('.fin-amount')||{}).value;
+    const amount=parseInt(raw);
+    if(desc||(raw!==''&&!isNaN(amount))) items.push({desc,amount:isNaN(amount)?0:amount});
+  });
+  return items;
+}
+function addFinanceRow(kind, data){
+  const box=document.getElementById('fin-'+kind+'-rows');
+  if(!box) return;
+  const row=document.createElement('div');
+  row.className='fin-row flex gap-2 items-center';
+  const ph = kind==='income'?'مثلاً حقوق':(kind==='expense'?'مثلاً ناهار':'مثلاً واریز / برداشت');
+  const allowNeg = kind==='savings' ? '' : ' min="0"';
+  row.innerHTML=`<input type="text" class="fin-desc border rounded-lg p-2 text-sm flex-1" placeholder="${ph}" value="${(data&&data.desc||'').replace(/"/g,'&quot;')}" oninput="recalcFinanceTotals();scheduleAutoSave()" />
+    <input type="number" class="fin-amount border rounded-lg p-2 text-sm w-28" placeholder="مبلغ"${allowNeg} value="${data&&data.amount!=null?data.amount:''}" oninput="recalcFinanceTotals();scheduleAutoSave()" />
+    <button type="button" onclick="this.closest('.fin-row').remove();recalcFinanceTotals();scheduleAutoSave()" class="text-red-500 text-sm px-1 font-bold">✕</button>`;
+  box.appendChild(row);
+  recalcFinanceTotals();
+}
+function recalcFinanceTotals(){
+  const inc=sumFinanceRows('income'), exp=sumFinanceRows('expense'), sav=sumFinanceRows('savings');
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=Number(v).toLocaleString('fa-IR');};
+  set('fin-income-total',inc); set('fin-expense-total',exp); set('fin-savings-total',sav);
+  if(typeof updateLiveAvgs==='function') updateLiveAvgs();
+}
+
+const ACT_META={
+  nonstudy:{ph:'نام کتاب / موضوع', unit:'دقیقه'},
+  exercise:{ph:'نوع ورزش', unit:'دقیقه'},
+  calories:{ph:'وعده / توضیح', unit:'kcal'}
+};
+function sumActRows(kind){
+  let t=0;
+  document.querySelectorAll('#act-'+kind+'-rows .act-row').forEach(row=>{
+    const n=parseFloat(row.querySelector('.act-amount').value);
+    if(!isNaN(n)) t+=n;
+  });
+  return Math.round(t);
+}
+function collectActItems(kind){
+  const items=[];
+  document.querySelectorAll('#act-'+kind+'-rows .act-row').forEach(row=>{
+    const desc=((row.querySelector('.act-desc')||{}).value||'').trim();
+    const raw=(row.querySelector('.act-amount')||{}).value;
+    const amount=parseFloat(raw);
+    if(desc||(raw!==''&&!isNaN(amount))) items.push({desc,amount:isNaN(amount)?0:amount});
+  });
+  return items;
+}
+function addActRow(kind, data){
+  const box=document.getElementById('act-'+kind+'-rows');
+  if(!box) return;
+  const meta=ACT_META[kind]||{ph:'توضیح',unit:''};
+  const row=document.createElement('div');
+  row.className='act-row flex gap-2 items-center';
+  row.innerHTML=`<input type="text" class="act-desc border rounded-lg p-2 text-sm flex-1" placeholder="${meta.ph}" value="${(data&&data.desc||'').replace(/"/g,'&quot;')}" oninput="recalcActTotals();scheduleAutoSave()" />
+    <input type="number" class="act-amount border rounded-lg p-2 text-sm w-28" min="0" placeholder="${meta.unit}" value="${data&&data.amount!=null?data.amount:''}" oninput="recalcActTotals();scheduleAutoSave()" />
+    <button type="button" onclick="this.closest('.act-row').remove();recalcActTotals();scheduleAutoSave()" class="text-red-500 text-sm px-1 font-bold">✕</button>`;
+  box.appendChild(row);
+  recalcActTotals();
+}
+function recalcActTotals(){
+  const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=Number(v).toLocaleString('fa-IR');};
+  set('act-nonstudy-total',sumActRows('nonstudy'));
+  set('act-exercise-total',sumActRows('exercise'));
+  set('act-calories-total',sumActRows('calories'));
+  if(typeof updateLiveAvgs==='function') updateLiveAvgs();
+}
+function loadActRows(r){
+  const map={
+    nonstudy: r.nonStudyItems || (r.nonStudy||r.bookName?[{desc:r.bookName||'',amount:r.nonStudy||0}]:[]),
+    exercise: r.exerciseItems || (r.exercise||r.exerciseType?[{desc:r.exerciseType||'',amount:r.exercise||0}]:[]),
+    calories: r.calorieItems || (r.calories?[{desc:'',amount:r.calories}]:[])
+  };
+  Object.keys(map).forEach(k=>{
+    const box=document.getElementById('act-'+k+'-rows');
+    if(box) box.innerHTML='';
+    const arr=map[k];
+    if(arr.length) arr.forEach(it=>addActRow(k,it));
+    else addActRow(k);
+  });
+  recalcActTotals();
+}
+function loadFinanceRows(r){
+  ['income','expense','savings'].forEach(k=>{
+    const box=document.getElementById('fin-'+k+'-rows');
+    if(box) box.innerHTML='';
+  });
+  const map={
+    income: r.incomeItems || (r.income?[{desc:'',amount:r.income}]:[]),
+    expense: r.expenseItems || (r.expense?[{desc:'',amount:r.expense}]:[]),
+    savings: r.savingsItems || (r.savings?[{desc:'',amount:r.savings}]:[])
+  };
+  Object.keys(map).forEach(k=>{
+    const arr=map[k];
+    if(arr.length) arr.forEach(it=>addFinanceRow(k,it));
+    else addFinanceRow(k); // یک ردیف خالی
+  });
+  recalcFinanceTotals();
+}
 function collectReport(){
   const studies=[];
   document.querySelectorAll('.study-row').forEach(row=>{
@@ -932,13 +1081,22 @@ function collectReport(){
     const tests=parseInt(row.querySelector('.study-tests').value)||0;const notes=row.querySelector('.study-notes').value.trim();
     if(subjectName||h||m||tests||notes) studies.push({subjectName,h,m,tests,notes});
   });
+  const incomeItems=collectFinanceItems('income');
+  const expenseItems=collectFinanceItems('expense');
+  const savingsItems=collectFinanceItems('savings');
+  const income=sumFinanceRows('income');
+  const expense=sumFinanceRows('expense');
+  const savings=sumFinanceRows('savings');
   return {
     diary:document.getElementById('r-diary').value.trim(),
-    income:parseInt(document.getElementById('r-income').value)||0,expense:parseInt(document.getElementById('r-expense').value)||0,savings:parseInt(document.getElementById('r-savings').value)||0,
-    studies,bookName:document.getElementById('r-book-name').value.trim(),nonStudy:parseInt(document.getElementById('r-nonstudy').value)||0,
-    exerciseType:document.getElementById('r-exercise-type').value.trim(),exercise:parseInt(document.getElementById('r-exercise').value)||0,
+    income,expense,savings,incomeItems,expenseItems,savingsItems,
+    studies,
+    nonStudyItems:collectActItems('nonstudy'),nonStudy:sumActRows('nonstudy'),
+    bookName:(collectActItems('nonstudy')[0]||{}).desc||'',
+    exerciseItems:collectActItems('exercise'),exercise:sumActRows('exercise'),
+    exerciseType:(collectActItems('exercise')[0]||{}).desc||'',
     sleepH:parseFloat(document.getElementById('r-sleep-h').value)||0,sleepQ:parseInt(document.getElementById('r-sleep-q').value)||0,
-    calories:parseInt(document.getElementById('r-calories').value)||0,
+    calorieItems:collectActItems('calories'),calories:sumActRows('calories'),
     tradeH:parseInt(document.getElementById('r-trade-h').value)||0,tradeM:parseInt(document.getElementById('r-trade-m').value)||0,
     tradeEdu:document.getElementById('r-trade-edu').value.trim(),tradeBacktest:document.getElementById('r-trade-backtest').value.trim(),tradeHistory:document.getElementById('r-trade-history').value.trim(),
     gratitude:document.getElementById('r-gratitude').value.trim(),prayer:document.getElementById('r-prayer').value.trim(),
@@ -995,30 +1153,85 @@ function saveReport(){
 function getStudyMinutes(r){if(!r||!r.studies)return 0;return r.studies.reduce((s,x)=>s+(x.h||0)*60+(x.m||0),0);}
 function getTradeMinutes(r){if(!r)return 0;return (r.tradeH||0)*60+(r.tradeM||0);}
 function getTestCount(r){if(!r||!r.studies)return 0;return r.studies.reduce((s,x)=>s+(x.tests||0),0);}
+function currentWeekBounds(jd){
+  // هفته‌های ماه شمسی: ۱–۷، ۸–۱۴، ۱۵–۲۱، ۲۲–۲۸ (و اگر روز>۲۸ همان هفتهٔ چهارم تا پایان)
+  if(jd<=7) return {start:1,end:7};
+  if(jd<=14) return {start:8,end:14};
+  if(jd<=21) return {start:15,end:21};
+  return {start:22,end:Math.max(jd,28)};
+}
+function sumReportField(r, field){
+  if(!r) return 0;
+  if(field==='study') return getStudyMinutes(r);
+  if(field==='nonStudy') return r.nonStudy||0;
+  if(field==='exercise') return r.exercise||0;
+  if(field==='trade') return getTradeMinutes(r);
+  if(field==='calories') return r.calories||0;
+  if(field==='tests') return getTestCount(r);
+  return 0;
+}
 function calcAverages(){
-  const n=new Date();const [jy,jm]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());
-  let weekStudy=0,weekDays=0,monthStudy=0,monthEx=0,monthTrade=0,monthDays=0;
-  const len=jalaliMonthLength(jy,jm);
-  for(let d=1;d<=len;d++){
-    const [gy,gm,gd]=jalaliToGregorian(jy,jm,d);const r=state.reports[toKey(gy,gm,gd)];if(!r)continue;
-    const sm=getStudyMinutes(r);if(d<=7){weekStudy+=sm;weekDays++;}
-    monthStudy+=sm;monthEx+=(r.exercise||0);monthTrade+=getTradeMinutes(r);monthDays++;
+  const n=new Date();const [jy,jm,jd]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());
+  // هفتهٔ جاری ماه (مثل ماه: روز اول هفته ÷۱ … روز هفتم ÷۷)
+  const wb=currentWeekBounds(jd);
+  const weekEnd=Math.min(wb.end, jd); // فقط تا امروز
+  const weekSpan=Math.max(1, weekEnd - wb.start + 1);
+  let weekStudy=0, weekNon=0, weekEx=0, weekTrade=0, weekCal=0;
+  for(let d=wb.start; d<=weekEnd; d++){
+    const [gy,gm,gd]=jalaliToGregorian(jy,jm,d);
+    const r=state.reports[toKey(gy,gm,gd)];
+    weekStudy+=sumReportField(r,'study');
+    weekNon+=sumReportField(r,'nonStudy');
+    weekEx+=sumReportField(r,'exercise');
+    weekTrade+=sumReportField(r,'trade');
+    weekCal+=sumReportField(r,'calories');
   }
-  return{avgWeekStudy:weekDays?Math.round(weekStudy/weekDays):0,avgMonthStudy:monthDays?Math.round(monthStudy/monthDays):0,avgMonthEx:monthDays?Math.round(monthEx/monthDays):0,avgMonthTrade:monthDays?Math.round(monthTrade/monthDays):0};
+  // ماه جاری: از ۱ تا امروز
+  const monthSpan=Math.max(1,jd);
+  let monthStudy=0,monthNon=0,monthEx=0,monthTrade=0,monthCal=0;
+  for(let d=1;d<=jd;d++){
+    const [gy,gm,gd]=jalaliToGregorian(jy,jm,d);
+    const r=state.reports[toKey(gy,gm,gd)];
+    monthStudy+=sumReportField(r,'study');
+    monthNon+=sumReportField(r,'nonStudy');
+    monthEx+=sumReportField(r,'exercise');
+    monthTrade+=sumReportField(r,'trade');
+    monthCal+=sumReportField(r,'calories');
+  }
+  return{
+    avgWeekStudy:Math.round(weekStudy/weekSpan),
+    avgWeekNon:Math.round(weekNon/weekSpan),
+    avgWeekEx:Math.round(weekEx/weekSpan),
+    avgWeekTrade:Math.round(weekTrade/weekSpan),
+    avgWeekCal:Math.round(weekCal/weekSpan),
+    weekSpan,
+    avgMonthStudy:Math.round(monthStudy/monthSpan),
+    avgMonthNon:Math.round(monthNon/monthSpan),
+    avgMonthEx:Math.round(monthEx/monthSpan),
+    avgMonthTrade:Math.round(monthTrade/monthSpan),
+    avgMonthCal:Math.round(monthCal/monthSpan),
+    monthSpan
+  };
 }
 function updateLiveAvgs(){
-  if(!document.getElementById('page-report')||!document.getElementById('page-report').classList.contains('active')){
-    // only compute averages from existing state
-  } else {
+  const onReport=document.getElementById('page-report')&&document.getElementById('page-report').classList.contains('active');
+  let av;
+  if(onReport){
     scheduleAutoSave();
+    const temp=collectReport();const key=state.currentReportKey||todayKey();const backup=state.reports[key];
+    state.reports[key]=temp;av=calcAverages();if(backup)state.reports[key]=backup;else delete state.reports[key];
+  } else {
+    av=calcAverages();
   }
-  const temp=collectReport();const key=state.currentReportKey||todayKey();const backup=state.reports[key];
-  state.reports[key]=temp;const av=calcAverages();if(backup)state.reports[key]=backup;else delete state.reports[key];
-  const el=id=>{const e=document.getElementById(id);return e;};
+  const el=id=>document.getElementById(id);
   if(el('live-avg-week')) el('live-avg-week').textContent=av.avgWeekStudy;
   if(el('live-avg-month')) el('live-avg-month').textContent=av.avgMonthStudy;
   if(el('live-avg-ex-month')) el('live-avg-ex-month').textContent=av.avgMonthEx;
   if(el('live-avg-trade-month')) el('live-avg-trade-month').textContent=av.avgMonthTrade;
+  if(el('live-avg-non-month')) el('live-avg-non-month').textContent=av.avgMonthNon;
+  if(el('live-avg-ex-week')) el('live-avg-ex-week').textContent=av.avgWeekEx;
+  if(el('live-avg-trade-week')) el('live-avg-trade-week').textContent=av.avgWeekTrade;
+  if(el('live-avg-non-week')) el('live-avg-non-week').textContent=av.avgWeekNon;
   if(el('avg-week-study')) el('avg-week-study').textContent=av.avgWeekStudy;
   if(el('avg-month-study')) el('avg-month-study').textContent=av.avgMonthStudy;
 }
@@ -1182,16 +1395,27 @@ function gatherRange(jy, jm, startD, endD) {
       bySubject[raw].tests += (s.tests || 0);
     });
   }
+  // میانگین روی تعداد روزهای تقویمی بازه (نه فقط روزهای دارای گزارش)
+  // برای آینده: فقط تا امروز شمرده می‌شود
+  const n=new Date();
+  const [tjy,tjm,tjd]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());
+  let span=0;
+  for(let d=startD;d<=endD;d++){
+    if(jy>tjy || (jy===tjy && jm>tjm) || (jy===tjy && jm===tjm && d>tjd)) continue; // آینده
+    span++;
+  }
+  if(span<1) span=1;
   return {
     studyMin, nonStudy, exercise, trade, tests, days, income, expense, savings,
-    avgStudy: days ? Math.round(studyMin / days) : 0,
-    avgNon: days ? Math.round(nonStudy / days) : 0,
-    avgEx: days ? Math.round(exercise / days) : 0,
-    avgTrade: days ? Math.round(trade / days) : 0,
-    avgSavings: days ? Math.round(savings / days) : 0,
+    spanDays: span,
+    avgStudy: Math.round(studyMin / span),
+    avgNon: Math.round(nonStudy / span),
+    avgEx: Math.round(exercise / span),
+    avgTrade: Math.round(trade / span),
+    avgSavings: Math.round(savings / span),
     avgSleepH: sleepDays ? Math.round((sleepH / sleepDays) * 10) / 10 : 0,
     avgSleepQ: sleepDays ? Math.round((sleepQ / sleepDays) * 10) / 10 : 0,
-    avgCalories: calDays ? Math.round(calories / calDays) : 0,
+    avgCalories: Math.round(calories / span),
     bySubject, calories
   };
 }
@@ -1355,7 +1579,8 @@ function financeBlockHTML(data, fin) {
   const expense = data.expense || 0;
   const savings = data.savings || 0;
   const days = data.days || 0;
-  const net = income - expense;
+  // خالص آزاد = دخل − خرج − پس‌انداز (پس‌انداز از دخل کنار گذاشته می‌شود)
+  const net = income - expense - savings;
   const prevBal = fin && typeof fin.prevBalance === 'number' ? fin.prevBalance : null;
   const nextBal = fin && typeof fin.nextBalance === 'number' ? fin.nextBalance : (prevBal != null ? prevBal + net : net);
   const spendPct = income > 0 ? Math.min(100, Math.round((expense / income) * 100)) : (expense > 0 ? 100 : 0);
@@ -1368,17 +1593,28 @@ function financeBlockHTML(data, fin) {
 
   let carryHTML = '';
   if (fin && fin.showCarry) {
+    const mk = fin.monthKey || '';
+    const manualVal = (state.openingBalances && state.openingBalances[mk] != null && state.openingBalances[mk] !== '') ? state.openingBalances[mk] : '';
     carryHTML = `
+      <div class="rounded-xl border border-amber-200 bg-amber-50/60 p-3 mb-2 space-y-2">
+        <div class="text-[11px] font-medium text-amber-900">✏️ مانده اول این ماه (دستی)</div>
+        <p class="text-[10px] text-amber-800/80 leading-relaxed">اگر از وسط سال شروع کردی یا ماندهٔ ماه قبل را می‌دانی، اینجا وارد کن. خالی = محاسبهٔ خودکار از ماه قبل.</p>
+        <div class="flex gap-2 items-center">
+          <input type="number" id="opening-balance-input" class="flex-1 border rounded-lg p-2 text-sm" placeholder="مثلاً مانده پایان مرداد" value="${manualVal}" />
+          <button type="button" onclick="saveOpeningBalance('${mk}')" class="bg-amber-600 text-white text-xs px-3 py-2 rounded-lg font-medium shrink-0">ذخیره</button>
+          <button type="button" onclick="clearOpeningBalance('${mk}')" class="text-xs text-slate-500 px-2 shrink-0">پاک</button>
+        </div>
+      </div>
       <div class="grid grid-cols-2 gap-2 mb-2">
         <div class="rounded-xl p-3 bg-slate-100 border border-slate-200">
           <div class="text-[11px] text-slate-500 mb-0.5">📥 مانده از ماه قبل</div>
           <div class="text-base font-bold ${prevBal >= 0 ? 'text-slate-800' : 'text-red-600'}">${moneyFa(prevBal)}</div>
-          <div class="text-[10px] text-slate-400 mt-0.5">انتقالی از دورهٔ قبل</div>
+          <div class="text-[10px] text-slate-400 mt-0.5">${manualVal!==''?'واردشده دستی':'محاسبه از ماه قبل'}</div>
         </div>
         <div class="rounded-xl p-3 bg-emerald-50 border border-emerald-200">
           <div class="text-[11px] text-emerald-700 mb-0.5">📤 باقی‌مانده برای ماه بعد</div>
           <div class="text-base font-bold ${nextClass}">${moneyFa(nextBal)}</div>
-          <div class="text-[10px] text-emerald-600/80 mt-0.5">مانده قبل + (دخل − خرج)</div>
+          <div class="text-[10px] text-emerald-600/80 mt-0.5">مانده قبل + (دخل − خرج − پس‌انداز)</div>
         </div>
       </div>`;
   }
@@ -1418,7 +1654,7 @@ function financeBlockHTML(data, fin) {
         })()}
         <div class="rounded-xl bg-slate-50 border border-slate-100 p-3 flex items-center justify-between gap-2">
           <div>
-            <div class="text-[11px] text-slate-500">خالص این دوره (دخل − خرج)</div>
+            <div class="text-[11px] text-slate-500">خالص آزاد (دخل − خرج − پس‌انداز)</div>
             <div class="text-lg font-bold ${netClass}">${net >= 0 ? '+' : ''}${moneyFa(net)}</div>
           </div>
           <div class="text-left text-[11px] text-slate-500 space-y-0.5">
@@ -1457,7 +1693,7 @@ function yearlyFinanceSmartHTML(jy, monthsData) {
     const net = (d.income || 0) - (d.expense || 0);
     if (net > bestNet.v) bestNet = { name: m.name, v: net };
   });
-  const yearNet = totIn - totEx;
+  const yearNet = totIn - totEx - totSav;
   const spendPct = totIn > 0 ? Math.round((totEx / totIn) * 100) : 0;
   const savePct = totIn > 0 ? Math.round((totSav / totIn) * 100) : 0;
   const avgIn = monthsWithData ? Math.round(totIn / monthsWithData) : 0;
@@ -1526,7 +1762,7 @@ function detailCard(title, data, extraHTML='', financeMeta=null) {
     <div class="card p-4 space-y-3">
       <div class="font-bold text-primary-700 text-lg">${title}</div>
       <div class="grid grid-cols-2 gap-2 text-sm">
-        <div class="bg-slate-50 rounded-xl p-3"><div class="text-xs text-slate-500">مطالعه درسی</div><div class="font-bold">${data.studyMin} دقیقه</div><div class="text-xs">میانگین ${data.avgStudy}/روز</div></div>
+        <div class="bg-slate-50 rounded-xl p-3"><div class="text-xs text-slate-500">مطالعه درسی</div><div class="font-bold">${data.studyMin} دقیقه</div><div class="text-xs">میانگین ${data.avgStudy}/روز <span class="text-slate-400">(از ${data.spanDays||data.days} روز)</span></div></div>
         <div class="bg-slate-50 rounded-xl p-3"><div class="text-xs text-slate-500">غیردرسی</div><div class="font-bold">${data.nonStudy} دقیقه</div><div class="text-xs">میانگین ${data.avgNon}/روز</div></div>
         <div class="bg-slate-50 rounded-xl p-3"><div class="text-xs text-slate-500">ورزش</div><div class="font-bold">${data.exercise} دقیقه</div><div class="text-xs">میانگین ${data.avgEx}/روز</div></div>
         <div class="bg-slate-50 rounded-xl p-3"><div class="text-xs text-slate-500">ترید</div><div class="font-bold">${data.trade} دقیقه</div><div class="text-xs">میانگین ${data.avgTrade}/روز</div></div>
@@ -1602,7 +1838,7 @@ function renderWeeklyList() {
       <table class="w-full text-xs">
         <thead><tr class="text-slate-500 border-b">
           <th class="py-1 text-right">شاخص</th>
-          ${weekData.map(w=>`<th class="py-1 text-center">${w.label.replace('هفته ','ه')}</th>`).join('')}
+          ${weekData.map((w,i)=>`<th class="py-1 text-center">ه${['۱','۲','۳','۴'][i]||(i+1)}</th>`).join('')}
         </tr></thead>
         <tbody>
           <tr class="border-b border-slate-50"><td class="py-1.5">مطالعه (د)</td>${weekData.map(w=>`<td class="text-center font-medium">${w.data.studyMin}</td>`).join('')}</tr>
@@ -1741,10 +1977,24 @@ function showMonthDetail(jy, jm, monthIdx) {
   const prevLen = jalaliMonthLength(prevJy, prevJm);
   const prev = gatherRange(prevJy, prevJm, 1, prevLen);
   // مانده از ماه قبل = خالص ماه قبل (دخل − خرج)
-  const prevBalance = (prev.income || 0) - (prev.expense || 0);
-  const monthNet = (data.income || 0) - (data.expense || 0);
+  const monthKey = jy+'-'+String(jm).padStart(2,'0');
+  const prevKey = prevJy+'-'+String(prevJm).padStart(2,'0');
+  // مانده اول این ماه: دستی یا محاسبه‌شده از ماه قبل
+  let prevBalance;
+  if(state.openingBalances && state.openingBalances[monthKey] != null && state.openingBalances[monthKey] !== ''){
+    prevBalance = Number(state.openingBalances[monthKey])||0;
+  } else {
+    // زنجیره: خالص ماه قبل = دخل − خرج − پس‌انداز
+    const prevNet = (prev.income||0) - (prev.expense||0) - (prev.savings||0);
+    let prevPrevBal = 0;
+    if(state.openingBalances && state.openingBalances[prevKey] != null && state.openingBalances[prevKey] !== ''){
+      prevPrevBal = Number(state.openingBalances[prevKey])||0;
+    }
+    prevBalance = prevPrevBal + prevNet;
+  }
+  const monthNet = (data.income||0) - (data.expense||0) - (data.savings||0);
   const nextBalance = prevBalance + monthNet;
-  const financeMeta = { showCarry: true, prevBalance, nextBalance, prevData: prev };
+  const financeMeta = { showCarry: true, prevBalance, nextBalance, prevData: prev, jy, jm, monthKey, monthNet };
   if (prev.days > 0 || data.days > 0) {
     extra = `<div class="border-t pt-2">
       <div class="text-xs font-medium text-slate-500 mb-1">🔀 نسبت به ${JALALI_MONTHS[prevJm-1]} ${prevJy}</div>
@@ -1768,6 +2018,30 @@ function showMonthDetail(jy, jm, monthIdx) {
   detail.innerHTML = detailCard(`${JALALI_MONTHS[jm-1]} ${jy}`, data, extra, financeMeta);
 }
 
+function saveOpeningBalance(monthKey){
+  if(!monthKey) return;
+  const el=document.getElementById('opening-balance-input');
+  if(!el) return;
+  const raw=el.value.trim();
+  if(!state.openingBalances) state.openingBalances={};
+  if(raw===''||raw===null){
+    delete state.openingBalances[monthKey];
+  } else {
+    state.openingBalances[monthKey]=parseInt(raw)||0;
+  }
+  save();
+  alert('مانده اول ماه ذخیره شد ✅');
+  // رفرش جزئیات ماه
+  const parts=monthKey.split('-');
+  if(parts.length===2) showMonthDetail(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[1])-1);
+}
+function clearOpeningBalance(monthKey){
+  if(!monthKey||!state.openingBalances) return;
+  delete state.openingBalances[monthKey];
+  save();
+  const parts=monthKey.split('-');
+  if(parts.length===2) showMonthDetail(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[1])-1);
+}
 function saveBudget(){
   state.budget={
     expenseLimit:parseInt(document.getElementById('budget-expense-limit').value)||0,
