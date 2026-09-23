@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
+  <!--
+    رُشدنامه — ساختار فایل
+    1) head: meta, PWA, icons, Tailwind/Firebase (defer), CSS
+    2) body: header → main#app (صفحات) → nav → toast → script
+    صفحات: home | report | todos | mistakes | weekly | monthly | settings
+  -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0f766e" />
@@ -19,10 +25,11 @@
   <title>رُشدنامه | دفتر رشد شخصی</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230f766e'/%3E%3Cstop offset='100%25' stop-color='%2314b8a6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath d='M14 44 V22 c0-2 1.5-3.5 3.5-3.5 H30 c1.2 0 2.2.5 3 1.3 c.8-.8 1.8-1.3 3-1.3 h12.5 c2 0 3.5 1.5 3.5 3.5 v22' fill='none' stroke='%23fff' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M32 19.5 V44' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M32 28 c-3-5-8-6-10-4 c2 4 6 6 10 7 c4-1 8-3 10-7 c-2-2-7-1-10 4z' fill='%23ccfbf1'/%3E%3Ccircle cx='32' cy='26' r='2.2' fill='%23fff'/%3E%3C/svg%3E" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230f766e'/%3E%3Cstop offset='100%25' stop-color='%2314b8a6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath d='M14 44 V22 c0-2 1.5-3.5 3.5-3.5 H30 c1.2 0 2.2.5 3 1.3 c.8-.8 1.8-1.3 3-1.3 h12.5 c2 0 3.5 1.5 3.5 3.5 v22' fill='none' stroke='%23fff' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M32 19.5 V44' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M32 28 c-3-5-8-6-10-4 c2 4 6 6 10 7 c4-1 8-3 10-7 c-2-2-7-1-10 4z' fill='%23ccfbf1'/%3E%3Ccircle cx='32' cy='26' r='2.2' fill='%23fff'/%3E%3C/svg%3E" />
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- اسکریپت‌های خارجی با defer تا UI اول لود شود؛ بدون نت هم اپ محلی کار می‌کند -->
+  <script src="https://cdn.tailwindcss.com" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
   <script>
     tailwind.config = {
       theme: {
@@ -35,10 +42,11 @@
       }
     }
   </script>
-  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" media="print" onload="this.media='all'" />
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     body { font-family: Vazirmatn, Tahoma, sans-serif; background: #f1f5f9; }
+    /* —— کارت و ناوبری —— */
     .card {
       background: white;
       border-radius: 1rem;
@@ -124,38 +132,70 @@
     }
     .toast.err { background: #991b1b; }
     @keyframes toastIn { from { opacity:0; transform: translateY(8px);} to { opacity:1; transform:none;} }
+    /* —— رنگ حیاتی (بدون وابستگی به Tailwind) —— */
+    /* رنگ‌های حیاتی — حتی اگر Tailwind لود نشود */
+    .app-header {
+      position: sticky; top: 0; z-index: 40;
+      background: #0f766e !important;
+      color: #fff !important;
+      box-shadow: 0 4px 14px rgba(15,118,110,.35);
+    }
+    .app-header h1 { color: #fff !important; font-size: 1.125rem; font-weight: 700; margin: 0; }
+    .app-header #header-date { color: rgba(204,251,241,.95) !important; font-size: 11px; margin: 0; }
+    .app-header #profile-badge {
+      background: #0d9488 !important; color: #fff !important;
+      font-size: 12px; padding: 4px 8px; border-radius: 8px; max-width: 140px;
+    }
+    .app-header .hdr-btn {
+      background: #0d9488 !important; color: #fff !important;
+      border: none; border-radius: 8px; padding: 8px; cursor: pointer;
+    }
+    .logo-badge {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+      border: 1px solid rgba(255,255,255,.25);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.15);
+      flex-shrink: 0;
+    }
+    .nav-btn.active { background: #0f766e !important; color: #fff !important; }
+    .btn-teal {
+      background: #0d9488 !important; color: #fff !important;
+      border: none; border-radius: 12px; font-weight: 600;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-24">
+  <!-- layout: header | main#app | nav | #toast-host | scripts -->
 
-  <header class="sticky top-0 z-40 bg-primary-700 text-white shadow-lg">
+  <header class="app-header">
     <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center shrink-0 border border-white/20 shadow-inner" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" class="w-7 h-7">
-            <path d="M14 44 V22 c0-2 1.5-3.5 3.5-3.5 H30 c1.2 0 2.2.5 3 1.3 c.8-.8 1.8-1.3 3-1.3 h12.5 c2 0 3.5 1.5 3.5 3.5 v22" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M32 19.5 V44" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+        <div class="logo-badge" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="28" height="28">
+            <path d="M14 44 V22 c0-2 1.5-3.5 3.5-3.5 H30 c1.2 0 2.2.5 3 1.3 c.8-.8 1.8-1.3 3-1.3 h12.5 c2 0 3.5 1.5 3.5 3.5 v22" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M32 19.5 V44" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
             <path d="M32 28 c-3-5-8-6-10-4 c2 4 6 6 10 7 c4-1 8-3 10-7 c-2-2-7-1-10 4z" fill="#ccfbf1"/>
             <circle cx="32" cy="26" r="2.2" fill="#fff"/>
           </svg>
         </div>
         <div>
-          <h1 class="text-lg font-bold leading-tight tracking-tight">رُشدنامه</h1>
-          <p class="text-[11px] text-primary-100/90" id="header-date">—</p>
+          <h1>رُشدنامه</h1>
+          <p id="header-date">—</p>
         </div>
       </div>
       <div class="flex gap-2 items-center">
-        <span class="text-xs bg-primary-600 px-2 py-1 rounded-lg max-w-[140px] truncate" id="profile-badge">مهمان</span>
-        <button onclick="showPage('settings')" class="p-2 rounded-lg bg-primary-600 hover:bg-primary-500" aria-label="تنظیمات">⚙️</button>
+        <span id="profile-badge">مهمان</span>
+        <button type="button" onclick="showPage('settings')" class="hdr-btn" aria-label="تنظیمات">⚙️</button>
       </div>
     </div>
-    <div id="sync-banner" class="hidden border-t border-primary-600 bg-primary-800 px-4 py-1.5 text-center text-[11px] text-primary-100"></div>
+    <div id="sync-banner" class="hidden" style="border-top:1px solid #0d9488;background:#115e59;padding:6px 16px;text-align:center;font-size:11px;color:#ccfbf1"></div>
   </header>
 
-  <main class="max-w-3xl mx-auto px-3 py-4 space-y-4" id="app">
+  <main class="max-w-3xl mx-auto px-3 py-4 space-y-4" id="app" role="main">
 
     <!-- HOME -->
-    <div id="page-home" class="tab-content active space-y-4">
+    <div id="page-home" class="tab-content active space-y-4" role="region" aria-label="خانه">
       <div class="card p-4 space-y-3">
         <div class="flex items-center justify-between gap-3">
           <div class="flex items-center gap-3">
@@ -297,7 +337,7 @@
     </div>
 
     <!-- REPORT -->
-    <div id="page-report" class="tab-content space-y-4">
+    <div id="page-report" class="tab-content space-y-4" role="region" aria-label="گزارش روزانه">
       <div class="flex items-center justify-between">
         <button onclick="saveReportSilent();showPage('home')" class="text-primary-700 font-medium">← بازگشت</button>
         <h2 class="font-bold text-lg" id="report-date-title">گزارش روزانه</h2>
@@ -456,7 +496,7 @@
     </div>
 
     <!-- TODOS -->
-    <div id="page-todos" class="tab-content space-y-4">
+    <div id="page-todos" class="tab-content space-y-4" role="region" aria-label="تودولیست">
       <div class="flex items-center justify-between">
         <button onclick="showPage('home')" class="text-primary-700 font-medium">← بازگشت</button>
         <h2 class="font-bold text-lg">تودولیست</h2>
@@ -494,7 +534,7 @@
     </div>
 
     <!-- MISTAKES -->
-    <div id="page-mistakes" class="tab-content space-y-4">
+    <div id="page-mistakes" class="tab-content space-y-4" role="region" aria-label="نکات اشتباه">
       <div class="flex items-center justify-between">
         <button onclick="showPage('home')" class="text-primary-700 font-medium">← بازگشت</button>
         <h2 class="font-bold text-lg">نکات اشتباه تست</h2>
@@ -507,7 +547,7 @@
     </div>
 
     <!-- WEEKLY -->
-    <div id="page-weekly" class="tab-content space-y-4">
+    <div id="page-weekly" class="tab-content space-y-4" role="region" aria-label="خلاصه هفتگی">
       <div class="flex items-center justify-between">
         <button onclick="showPage('home')" class="text-primary-700 font-medium">← بازگشت</button>
         <h2 class="font-bold text-lg">خلاصه هفتگی</h2>
@@ -562,7 +602,7 @@
     </div>
 
     <!-- MONTHLY -->
-    <div id="page-monthly" class="tab-content space-y-4">
+    <div id="page-monthly" class="tab-content space-y-4" role="region" aria-label="خلاصه ماهانه">
       <div class="flex items-center justify-between gap-2">
         <button onclick="showPage('home')" class="text-primary-700 font-medium shrink-0">← بازگشت</button>
         <h2 class="font-bold text-lg">خلاصه ماهانه</h2>
@@ -601,7 +641,7 @@
     </div>
 
     <!-- SETTINGS -->
-    <div id="page-settings" class="tab-content space-y-4">
+    <div id="page-settings" class="tab-content space-y-4" role="region" aria-label="تنظیمات">
       <div class="flex items-center justify-between">
         <button onclick="showPage('home')" class="text-primary-700 font-medium">← بازگشت</button>
         <h2 class="font-bold text-lg">تنظیمات</h2>
@@ -725,6 +765,16 @@
   </nav>
 
 <script>
+/* ==========================================================================
+   SCRIPT MODULES (ترتیب وابستگی)
+   A. Firebase config + state
+   B. Jalali date helpers
+   C. Load / save / IndexedDB / merge
+   D. Auth + cloud
+   E. UI navigation + calendar + report form
+   F. Stats, streaks, charts, weekly/monthly, PDF
+   G. Settings helpers + boot
+   ========================================================================== */
 const firebaseConfig = {
   apiKey: "AIzaSyCjZjY2Ynu20-PkmNwLCNN3gGefd-E9Ip4",
   authDomain: "my-app-backup-9e7d0.firebaseapp.com",
@@ -750,7 +800,7 @@ try {
   cloudReady = false;
 }
 
-/* ========== JALALI ========== */
+/* ========== B. JALALI DATE ========== */
 function div(a,b){return Math.floor(a/b)}
 function gregorianToJalali(gy,gm,gd){
   const g_days_in_month=[0,31,28,31,30,31,30,31,31,30,31,30,31];
@@ -793,7 +843,7 @@ function todayKey(){const n=new Date();return toKey(n.getFullYear(),n.getMonth()
 function formatJalali(y,m,d){return `${d} ${JALALI_MONTHS[m-1]} ${y}`;}
 function formatBoth(gy,gm,gd){const [jy,jm,jd]=gregorianToJalali(gy,gm,gd);return{jalali:formatJalali(jy,jm,jd),greg:`${gd} ${GREG_MONTHS[gm-1]} ${gy}`,jy,jm,jd,gy,gm,gd};}
 
-/* ========== STATE ========== */
+/* ========== A/C. STATE + PERSISTENCE ========== */
 const STORAGE_KEY='lifeJournal_v4';
 let state={
   subjects:[],reports:{},todos:[],profile:{name:'',id:''},
@@ -839,9 +889,13 @@ function save(){
   if(typeof updateLastSaveHint==='function') updateLastSaveHint();
 }
 function scheduleCloudSave(){
+  // همگام ابری فقط دستی (دکمه ذخیره در ابر) — برای سرعت و دیتای موبایل در ایران
+  // اگر بعداً خواستی خودکار شود: state.cloudAutoSync = true
+  if(!state.cloudAutoSync) return;
   if(!currentUser||!cloudReady) return;
+  if(typeof navigator!=='undefined' && navigator.onLine===false) return;
   clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{saveToCloud(true);},1800);
+  saveTimer=setTimeout(()=>{saveToCloud(true);},8000);
 }
 
 function payload(){
@@ -860,23 +914,112 @@ function payload(){
   };
 }
 
-function applyPayload(d){
+function reportTs(r){
+  if(!r) return 0;
+  const t = Date.parse(r.updatedAt||'')||0;
+  return t;
+}
+function isReportRicher(a,b){
+  // a بهتر از b است؟
+  if(!b) return true;
+  if(!a) return false;
+  const ta=reportTs(a), tb=reportTs(b);
+  if(ta!==tb) return ta>tb;
+  // بدون تاریخ: آن که معنی‌دارتر است
+  const ma=typeof isReportMeaningful==='function' ? isReportMeaningful(a) : true;
+  const mb=typeof isReportMeaningful==='function' ? isReportMeaningful(b) : true;
+  if(ma && !mb) return true;
+  if(!ma && mb) return false;
+  // حجم تقریبی
+  return JSON.stringify(a).length >= JSON.stringify(b).length;
+}
+/** ادغام ابر و محلی — هیچ‌کدام را بی‌دلیل دور نریز */
+function mergeJournal(local, cloud){
+  local = local || {};
+  cloud = cloud || {};
+  const out = {
+    subjects: [],
+    reports: {},
+    todos: [],
+    profile: Object.assign({}, cloud.profile||{}, local.profile||{}),
+    budget: Object.assign({}, cloud.budget||{}, local.budget||{}),
+    openingBalances: Object.assign({}, cloud.openingBalances||{}, local.openingBalances||{}),
+    goals: Object.assign({}, cloud.goals||{}, local.goals||{}),
+    modules: Object.assign({}, cloud.modules||{}, local.modules||{}),
+    reviewedMistakes: Object.assign({}, cloud.reviewedMistakes||{}, local.reviewedMistakes||{}),
+    reflections: Object.assign({}, cloud.reflections||{}, local.reflections||{}),
+    updatedAt: new Date().toISOString()
+  };
+  // reports: کلیدروز → نسخهٔ جدیدتر/غنی‌تر
+  const allKeys = new Set([
+    ...Object.keys(cloud.reports||{}),
+    ...Object.keys(local.reports||{})
+  ]);
+  allKeys.forEach(k=>{
+    const L=(local.reports||{})[k], C=(cloud.reports||{})[k];
+    if(isReportRicher(L,C)) out.reports[k]=L;
+    else out.reports[k]=C;
+  });
+  // todos: بر اساس id
+  const todoMap={};
+  (cloud.todos||[]).forEach(t=>{ if(t&&t.id) todoMap[t.id]=t; });
+  (local.todos||[]).forEach(t=>{
+    if(!t||!t.id) return;
+    const prev=todoMap[t.id];
+    if(!prev){ todoMap[t.id]=t; return; }
+    const tl=Date.parse(t.lastDoneDate||t.updatedAt||0)||0;
+    const tp=Date.parse(prev.lastDoneDate||prev.updatedAt||0)||0;
+    // اگر محلی done شده و ابر نه، محلی
+    if(t.done && !prev.done) todoMap[t.id]=t;
+    else if(tl>=tp) todoMap[t.id]=Object.assign({},prev,t);
+  });
+  out.todos=Object.values(todoMap);
+  // subjects: اتحاد بر اساس نام
+  const subMap={};
+  (cloud.subjects||[]).concat(local.subjects||[]).forEach(s=>{
+    if(!s||!s.name) return;
+    const key=(s.name||'').trim().replace(/\s+/g,' ');
+    if(!key) return;
+    if(!subMap[key]) subMap[key]=s;
+  });
+  out.subjects=Object.values(subMap);
+  return out;
+}
+function applyPayload(d, mode){
+  // mode: 'replace' (قدیمی) | 'merge' (پیش‌فرض امن)
   if(!d) return;
-  if(d.subjects) state.subjects=d.subjects;
-  if(d.reports) state.reports=d.reports;
-  if(d.todos) state.todos=d.todos;
-  if(d.profile) state.profile=d.profile;
-  if(d.budget) state.budget=d.budget;
-  if(d.openingBalances) state.openingBalances=d.openingBalances;
-  if(d.goals) state.goals=d.goals;
-  if(d.modules) state.modules=Object.assign(state.modules||{},d.modules);
-  if(d.reviewedMistakes) state.reviewedMistakes=d.reviewedMistakes;
-  if(d.reflections) state.reflections=d.reflections;
+  if(mode==='replace'){
+    if(d.subjects) state.subjects=d.subjects;
+    if(d.reports) state.reports=d.reports;
+    if(d.todos) state.todos=d.todos;
+    if(d.profile) state.profile=d.profile;
+    if(d.budget) state.budget=d.budget;
+    if(d.openingBalances) state.openingBalances=d.openingBalances;
+    if(d.goals) state.goals=d.goals;
+    if(d.modules) state.modules=Object.assign(state.modules||{},d.modules);
+    if(d.reviewedMistakes) state.reviewedMistakes=d.reviewedMistakes;
+    if(d.reflections) state.reflections=d.reflections;
+  } else {
+    const local = payload();
+    const merged = mergeJournal(local, d);
+    state.subjects=merged.subjects;
+    state.reports=merged.reports;
+    state.todos=merged.todos;
+    state.profile=merged.profile||state.profile;
+    state.budget=Object.assign(state.budget||{}, merged.budget||{});
+    state.openingBalances=merged.openingBalances||{};
+    state.goals=Object.assign(state.goals||{}, merged.goals||{});
+    state.modules=Object.assign(state.modules||{}, merged.modules||{});
+    state.reviewedMistakes=merged.reviewedMistakes||{};
+    state.reflections=merged.reflections||{};
+  }
   saveLocalOnly();
   updateProfileBadge();
   renderCalendar();
   updateStreakUI();
   renderHomeBudget();
+  if(typeof renderHomeGoals==='function') renderHomeGoals();
+  if(typeof renderConsistency==='function') renderConsistency();
 }
 function saveLocalOnly(){
   const data=payload();
@@ -891,7 +1034,14 @@ function idbOpen(){
     req.onerror=()=>reject(req.error);
   });
 }
-async function idbSet(data){
+let idbTimer=null, idbPending=null;
+function idbSet(data){
+  idbPending=data;
+  clearTimeout(idbTimer);
+  idbTimer=setTimeout(function(){ idbSetNow(idbPending); }, 400);
+}
+async function idbSetNow(data){
+  if(!data) return;
   try{
     const db=await idbOpen();
     await new Promise((resolve,reject)=>{
@@ -914,7 +1064,7 @@ async function idbGet(){
   }catch(e){ return null; }
 }
 
-/* ========== AUTH + CLOUD ========== */
+/* ========== D. AUTH + CLOUD ========== */
 function setSyncBanner(msg, show){
   const el=document.getElementById('sync-banner');
   if(!el) return;
@@ -1009,10 +1159,11 @@ async function loadFromCloud(silent){
   try{
     const doc=await db.collection('users').doc(currentUser.uid).get();
     if(doc.exists && doc.data().journal){
-      applyPayload(doc.data().journal);
-      setSyncBanner('بازیابی شد ✓', true);
+      applyPayload(doc.data().journal, 'merge');
+      setSyncBanner('بازیابی با ادغام ✓', true);
       setTimeout(()=>setSyncBanner('', false), 2000);
-      if(!silent) toast('داده‌ها از حساب بازیابی شد');
+      if(!silent) toast('ابر با دادهٔ محلی ادغام شد — چیزی پاک نشد');
+      try{ await saveToCloud(true); }catch(e){}
       showPage('home');
       return true;
     } else {
@@ -1029,39 +1180,65 @@ async function loadFromCloud(silent){
 }
 
 function setupAuth(){
-  if(!auth) return;
-  // نتیجه redirect
-  auth.getRedirectResult().then(async (result)=>{
-    if(result && result.user){
-      // بعد از ورود: اگر ابر خالی بود، لوکال را آپلود کن
-      await afterLogin();
+  if(typeof firebase==='undefined'){
+    // اسکریپت هنوز defer است — کمی بعد دوباره
+    setTimeout(setupAuth, 400);
+    return;
+  }
+  try{
+    if(!auth){
+      if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+      auth = firebase.auth();
+      db = firebase.firestore();
+      cloudReady = firebaseConfig.apiKey && !firebaseConfig.apiKey.includes("PASTE_YOUR");
     }
+  }catch(e){ console.warn('firebase init', e); return; }
+  if(!auth) return;
+  auth.getRedirectResult().then(async (result)=>{
+    if(result && result.user) await afterLogin();
   }).catch(err=>{
-    if(err.code!=='auth/network-request-failed') console.error(err);
+    if(err.code!=='auth/network-request-failed') console.warn(err);
   });
-
   auth.onAuthStateChanged(async (user)=>{
     currentUser=user;
     updateAuthUI();
-    if(user) await afterLogin();
+    // بعد از ورود فقط یک‌بار همگام‌سازی ملایم — UI را قفل نکن
+    if(user) setTimeout(function(){ afterLogin(); }, 300);
   });
 }
 
 async function afterLogin(){
   if(!currentUser||!cloudReady) return;
+  if(typeof navigator!=='undefined' && navigator.onLine===false){
+    setSyncBanner('آفلاین — نوشته‌های محلی حفظ شدند', true);
+    setTimeout(()=>setSyncBanner('', false), 2500);
+    return;
+  }
   try{
-    const doc=await db.collection('users').doc(currentUser.uid).get();
-    const cloud=doc.exists ? doc.data().journal : null;
-    const hasCloud=cloud && (Object.keys(cloud.reports||{}).length || (cloud.todos||[]).length || (cloud.subjects||[]).length);
-    const hasLocal=Object.keys(state.reports).length || state.todos.length || state.subjects.length;
-    if(hasCloud){
-      applyPayload(cloud);
-      setSyncBanner('همگام با حساب شما', true);
-      setTimeout(()=>setSyncBanner('', false), 2500);
+    const timeout = new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), 8000));
+    const doc = await Promise.race([
+      db.collection('users').doc(currentUser.uid).get(),
+      timeout
+    ]);
+    const cloud = (doc.exists && doc.data().journal) ? doc.data().journal : null;
+    const localSnap = payload();
+    const hasLocal = Object.keys(localSnap.reports||{}).length || (localSnap.todos||[]).length;
+    if(cloud){
+      // ادغام: نوشتهٔ آفلاین پاک نمی‌شود
+      applyPayload(cloud, 'merge');
+      setSyncBanner('ادغام محلی + ابر انجام شد — برای اطمینان «ذخیره در ابر» بزن', true);
+      setTimeout(()=>setSyncBanner('', false), 4000);
+      // بعد از ادغام، نتیجه را به ابر برگردان تا هیچ‌طرف از دست نرود
+      try{ await saveToCloud(true); }catch(e){}
     } else if(hasLocal){
-      await saveToCloud(true);
+      setSyncBanner('حساب خالی بود — با «ذخیره در ابر» زحمتت را بک‌آپ کن', true);
+      setTimeout(()=>setSyncBanner('', false), 4000);
     }
-  }catch(e){ console.error(e); }
+  }catch(e){
+    console.warn('afterLogin', e);
+    setSyncBanner('ابر در دسترس نیست — نوشته‌های محلی سر جایشان‌اند', true);
+    setTimeout(()=>setSyncBanner('', false), 3500);
+  }
 }
 
 function toast(msg, isErr){
@@ -1073,7 +1250,7 @@ function toast(msg, isErr){
   host.appendChild(el);
   setTimeout(function(){ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(function(){ el.remove(); },300); }, 2800);
 }
-/* ========== UI CORE ========== */
+/* ========== E. UI CORE + REPORT ========== */
 function showPage(name){
   // اگر از گزارش خارج می‌شویم، قبلش ذخیره کن
   const wasReport=document.getElementById('page-report')&&document.getElementById('page-report').classList.contains('active');
@@ -1420,6 +1597,7 @@ function saveReport(){
   showPage('home');
 }
 
+/* ========== F. STATS / STREAKS / CHARTS / PDF ========== */
 function getStudyMinutes(r){if(!r||!r.studies)return 0;return r.studies.reduce((s,x)=>s+(x.h||0)*60+(x.m||0),0);}
 function getTradeMinutes(r){if(!r)return 0;return (r.tradeH||0)*60+(r.tradeM||0);}
 function getTestCount(r){if(!r||!r.studies)return 0;return r.studies.reduce((s,x)=>s+(x.tests||0),0);}
@@ -2934,7 +3112,7 @@ function updateLastSaveHint(){
   }catch(e){ el.textContent=''; }
 }
 
-/* BOOT */
+/* ========== G. BOOT ========== */
 
 load();
 (async function hydrateFromIdb(){
