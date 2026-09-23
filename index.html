@@ -152,11 +152,9 @@
     }
     .logo-badge {
       width: 40px; height: 40px; border-radius: 12px;
-      background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
-      border: 1px solid rgba(255,255,255,.25);
-      display: flex; align-items: center; justify-content: center;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.15);
-      flex-shrink: 0;
+      overflow: hidden; flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
     }
     .nav-btn.active { background: #0f766e !important; color: #fff !important; }
     .btn-teal {
@@ -171,8 +169,15 @@
   <header class="app-header">
     <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="logo-badge" aria-hidden="true">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="28" height="28">
+        <div class="logo-badge" aria-hidden="true" title="رُشدنامه">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="40" height="40" style="display:block;border-radius:12px">
+            <defs>
+              <linearGradient id="logoGrad" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0f766e"/>
+                <stop offset="100%" stop-color="#14b8a6"/>
+              </linearGradient>
+            </defs>
+            <rect width="64" height="64" rx="14" fill="url(#logoGrad)"/>
             <path d="M14 44 V22 c0-2 1.5-3.5 3.5-3.5 H30 c1.2 0 2.2.5 3 1.3 c.8-.8 1.8-1.3 3-1.3 h12.5 c2 0 3.5 1.5 3.5 3.5 v22" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M32 19.5 V44" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
             <path d="M32 28 c-3-5-8-6-10-4 c2 4 6 6 10 7 c4-1 8-3 10-7 c-2-2-7-1-10 4z" fill="#ccfbf1"/>
@@ -845,6 +850,28 @@ function formatBoth(gy,gm,gd){const [jy,jm,jd]=gregorianToJalali(gy,gm,gd);retur
 
 /* ========== A/C. STATE + PERSISTENCE ========== */
 const STORAGE_KEY='lifeJournal_v4';
+const SAFETY_KEY='lifeJournal_safety_v4';
+function backupLocalSafety(){
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw) localStorage.setItem(SAFETY_KEY, raw);
+  }catch(e){}
+}
+function restoreLocalSafetyIfEmpty(){
+  try{
+    const cur=localStorage.getItem(STORAGE_KEY);
+    let empty=!cur;
+    if(cur){
+      const d=JSON.parse(cur);
+      empty=!(Object.keys(d.reports||{}).length || (d.todos||[]).length);
+    }
+    if(!empty) return false;
+    const safe=localStorage.getItem(SAFETY_KEY);
+    if(!safe) return false;
+    localStorage.setItem(STORAGE_KEY, safe);
+    return true;
+  }catch(e){ return false; }
+}
 let state={
   subjects:[],reports:{},todos:[],profile:{name:'',id:''},
   budget:{expenseLimit:0,savingsGoal:0,incomeGoal:0,savingsValue:0},
@@ -860,6 +887,7 @@ const IDB_NAME='roshdnameh_idb', IDB_STORE='journal';
 
 function load(){
   try{
+    restoreLocalSafetyIfEmpty();
     const raw=localStorage.getItem(STORAGE_KEY)||localStorage.getItem('lifeJournal_v3')||localStorage.getItem('lifeJournal_v2');
     if(raw){
       const d=JSON.parse(raw);
@@ -880,22 +908,27 @@ function load(){
 }
 function save(){
   const data=payload();
-  try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); }catch(e){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+    localStorage.setItem(SAFETY_KEY,JSON.stringify(data));
+  }catch(e){
     console.warn('localStorage full',e);
     toast('حافظهٔ مرورگر پر شد — خروجی JSON بگیر', true);
   }
   idbSet(data);
+  // اگر وارد حسابی، خودکار به ابر هم بچسبد (وقتی آنلاین)
+  if(currentUser && cloudReady && navigator.onLine!==false){
+    state.cloudAutoSync = true;
+  }
   scheduleCloudSave();
   if(typeof updateLastSaveHint==='function') updateLastSaveHint();
 }
 function scheduleCloudSave(){
-  // همگام ابری فقط دستی (دکمه ذخیره در ابر) — برای سرعت و دیتای موبایل در ایران
-  // اگر بعداً خواستی خودکار شود: state.cloudAutoSync = true
-  if(!state.cloudAutoSync) return;
   if(!currentUser||!cloudReady) return;
   if(typeof navigator!=='undefined' && navigator.onLine===false) return;
+  // بعد از ورود: خودکار به جیمیل می‌چسبد (debounce)
   clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{saveToCloud(true);},8000);
+  saveTimer=setTimeout(function(){ saveToCloud(true); }, 2500);
 }
 
 function payload(){
@@ -920,17 +953,15 @@ function reportTs(r){
   return t;
 }
 function isReportRicher(a,b){
-  // a بهتر از b است؟
   if(!b) return true;
   if(!a) return false;
-  const ta=reportTs(a), tb=reportTs(b);
-  if(ta!==tb) return ta>tb;
-  // بدون تاریخ: آن که معنی‌دارتر است
-  const ma=typeof isReportMeaningful==='function' ? isReportMeaningful(a) : true;
-  const mb=typeof isReportMeaningful==='function' ? isReportMeaningful(b) : true;
+  const ma = typeof isReportMeaningful==='function' ? isReportMeaningful(a) : !!(a&&(a.diary||a.studies));
+  const mb = typeof isReportMeaningful==='function' ? isReportMeaningful(b) : !!(b&&(b.diary||b.studies));
+  // همیشه دادهٔ معنی‌دار بر خالی اولویت دارد (جلوگیری از پریدن نوشتهٔ آفلاین)
   if(ma && !mb) return true;
   if(!ma && mb) return false;
-  // حجم تقریبی
+  const ta=reportTs(a), tb=reportTs(b);
+  if(ta!==tb) return ta>tb;
   return JSON.stringify(a).length >= JSON.stringify(b).length;
 }
 /** ادغام ابر و محلی — هیچ‌کدام را بی‌دلیل دور نریز */
@@ -1209,35 +1240,47 @@ function setupAuth(){
 
 async function afterLogin(){
   if(!currentUser||!cloudReady) return;
-  if(typeof navigator!=='undefined' && navigator.onLine===false){
-    setSyncBanner('آفلاین — نوشته‌های محلی حفظ شدند', true);
-    setTimeout(()=>setSyncBanner('', false), 2500);
-    return;
-  }
+  if(afterLogin._busy) return;
+  afterLogin._busy = true;
   try{
-    const timeout = new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')), 8000));
-    const doc = await Promise.race([
-      db.collection('users').doc(currentUser.uid).get(),
-      timeout
-    ]);
-    const cloud = (doc.exists && doc.data().journal) ? doc.data().journal : null;
+    backupLocalSafety();
+    if(typeof navigator!=='undefined' && navigator.onLine===false){
+      setSyncBanner('آفلاین — همه چیز روی گوشی ذخیره است', true);
+      setTimeout(function(){ setSyncBanner('', false); }, 2500);
+      return;
+    }
+    const timeout = new Promise(function(_,rej){ setTimeout(function(){ rej(new Error('timeout')); }, 10000); });
+    var doc;
+    try{
+      doc = await Promise.race([
+        db.collection('users').doc(currentUser.uid).get(),
+        timeout
+      ]);
+    }catch(netErr){
+      setSyncBanner('ابر در دسترس نیست — نوشته‌های گوشی محفوظ‌اند', true);
+      setTimeout(function(){ setSyncBanner('', false); }, 3500);
+      return;
+    }
+    const cloud = (doc && doc.exists && doc.data().journal) ? doc.data().journal : null;
     const localSnap = payload();
     const hasLocal = Object.keys(localSnap.reports||{}).length || (localSnap.todos||[]).length;
     if(cloud){
-      // ادغام: نوشتهٔ آفلاین پاک نمی‌شود
       applyPayload(cloud, 'merge');
-      setSyncBanner('ادغام محلی + ابر انجام شد — برای اطمینان «ذخیره در ابر» بزن', true);
-      setTimeout(()=>setSyncBanner('', false), 4000);
-      // بعد از ادغام، نتیجه را به ابر برگردان تا هیچ‌طرف از دست نرود
+      setSyncBanner('ادغام شد — در حال ذخیره روی جیمیل…', true);
       try{ await saveToCloud(true); }catch(e){}
+      setSyncBanner('محلی + جیمیل هم‌تراز شدند ✓', true);
+      setTimeout(function(){ setSyncBanner('', false); }, 3500);
     } else if(hasLocal){
-      setSyncBanner('حساب خالی بود — با «ذخیره در ابر» زحمتت را بک‌آپ کن', true);
-      setTimeout(()=>setSyncBanner('', false), 4000);
+      setSyncBanner('حساب خالی بود — در حال آپلود نوشته‌های گوشی…', true);
+      try{ await saveToCloud(true); }catch(e){}
+      setSyncBanner('نوشته‌های گوشی روی جیمیل ذخیره شد ✓', true);
+      setTimeout(function(){ setSyncBanner('', false); }, 3500);
+    } else {
+      setSyncBanner('وارد حساب شدی', true);
+      setTimeout(function(){ setSyncBanner('', false); }, 2000);
     }
-  }catch(e){
-    console.warn('afterLogin', e);
-    setSyncBanner('ابر در دسترس نیست — نوشته‌های محلی سر جایشان‌اند', true);
-    setTimeout(()=>setSyncBanner('', false), 3500);
+  }finally{
+    afterLogin._busy = false;
   }
 }
 
