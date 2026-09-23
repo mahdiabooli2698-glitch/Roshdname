@@ -161,6 +161,70 @@
       background: #0d9488 !important; color: #fff !important;
       border: none; border-radius: 12px; font-weight: 600;
     }
+    /* —— اصلاح کنتراست فیلدها و گزینه‌ها —— */
+    input[type="text"],
+    input[type="number"],
+    input[type="search"],
+    input[type="time"],
+    textarea,
+    select {
+      border: 1.5px solid #94a3b8 !important;
+      background-color: #ffffff !important;
+      color: #1e293b !important;
+    }
+    input::placeholder,
+    textarea::placeholder {
+      color: #64748b !important;
+      opacity: 1 !important;
+    }
+    input[type="checkbox"] {
+      width: 1.15rem;
+      height: 1.15rem;
+      accent-color: #0d9488;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .mood-btn, .mood-btn-r {
+      border: 1.5px solid #cbd5e1 !important;
+      background: #ffffff !important;
+    }
+    .mood-btn.ring-2, .mood-btn-r.ring-2,
+    .mood-btn.bg-primary-50, .mood-btn-r.bg-primary-50 {
+      border-color: #0d9488 !important;
+      background: #ccfbf1 !important;
+    }
+    .todo-item {
+      cursor: grab;
+      user-select: none;
+      transition: box-shadow .15s, opacity .15s, border-color .15s;
+    }
+    .todo-item.dragging {
+      opacity: 0.55;
+      border-color: #0d9488 !important;
+      box-shadow: 0 8px 20px rgba(13,148,136,.2);
+    }
+    .todo-item.drag-over {
+      border-color: #14b8a6 !important;
+      background: #f0fdfa !important;
+    }
+    .todo-item .todo-text {
+      cursor: text;
+      border-radius: 6px;
+      padding: 2px 4px;
+      min-height: 1.4em;
+    }
+    .todo-item .todo-text[contenteditable="true"] {
+      outline: 2px solid #0d9488;
+      background: #f0fdfa;
+      cursor: text;
+    }
+    .todo-drag-handle {
+      color: #94a3b8;
+      font-size: 14px;
+      padding: 0 2px;
+      cursor: grab;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-24">
@@ -176,12 +240,20 @@
                 <stop offset="0%" stop-color="#0f766e"/>
                 <stop offset="100%" stop-color="#14b8a6"/>
               </linearGradient>
+              <linearGradient id="leafG" x1="0" y1="1" x2="1" y2="0">
+                <stop offset="0%" stop-color="#ccfbf1"/>
+                <stop offset="100%" stop-color="#5eead4"/>
+              </linearGradient>
             </defs>
             <rect width="64" height="64" rx="14" fill="url(#logoGrad)"/>
-            <path d="M14 44 V22 c0-2 1.5-3.5 3.5-3.5 H30 c1.2 0 2.2.5 3 1.3 c.8-.8 1.8-1.3 3-1.3 h12.5 c2 0 3.5 1.5 3.5 3.5 v22" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
-            <path d="M32 19.5 V44" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
-            <path d="M32 28 c-3-5-8-6-10-4 c2 4 6 6 10 7 c4-1 8-3 10-7 c-2-2-7-1-10 4z" fill="#ccfbf1"/>
-            <circle cx="32" cy="26" r="2.2" fill="#fff"/>
+            <path d="M14 18 h16 c1.5 0 2.5 1 2 2.5 v28 c0 1.5-1 2.5-2.5 2.5 H14 c-1.5 0-2.5-1-2.5-2.5 V20.5 c0-1.5 1-2.5 2.5-2.5z" fill="#fff" opacity="0.95"/>
+            <path d="M50 18 H34 c-1.5 0-2.5 1-2 2.5 v28 c0 1.5 1 2.5 2.5 2.5 H50 c1.5 0 2.5-1 2.5-2.5 V20.5 c0-1.5-1-2.5-2.5-2.5z" fill="#fff" opacity="0.95"/>
+            <rect x="30" y="19" width="4" height="30" rx="1" fill="#0f766e" opacity="0.3"/>
+            <path d="M32 42 C32 36 31 32 30 28" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
+            <path d="M30 29 C22 24 18 28 20 34 C25 32 28 31 30 29Z" fill="url(#leafG)" stroke="#0f766e" stroke-width="1"/>
+            <path d="M31 29 C39 24 44 28 42 34 C37 32 34 31 31 29Z" fill="url(#leafG)" stroke="#0f766e" stroke-width="1"/>
+            <circle cx="32" cy="26" r="3.2" fill="#ccfbf1" stroke="#0f766e" stroke-width="1"/>
+            <circle cx="32" cy="26" r="1.4" fill="#5eead4"/>
           </svg>
         </div>
         <div>
@@ -1811,14 +1883,111 @@ function toggleTodo(id){
   save();renderTodos();
 }
 function deleteTodo(id){state.todos=state.todos.filter(x=>x.id!==id);save();renderTodos();}
+function startEditTodo(el, id){
+  if(el.getAttribute('contenteditable')==='true') return;
+  el.setAttribute('contenteditable','true');
+  el.focus();
+  const item=el.closest('.todo-item');
+  if(item) item.draggable=false;
+  try{
+    const range=document.createRange();
+    range.selectNodeContents(el);
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }catch(e){}
+  const finish=()=>{
+    el.removeAttribute('contenteditable');
+    el.onblur=null;
+    el.onkeydown=null;
+    if(item) item.draggable=true;
+    const newText=(el.innerText||'').trim();
+    const t=state.todos.find(x=>x.id===id);
+    if(t && newText && newText!==t.text){
+      t.text=newText;
+      save();
+    } else if(t && !newText){
+      el.innerText=t.text;
+    }
+    renderTodos();
+  };
+  el.onblur=finish;
+  el.onkeydown=(e)=>{
+    if(e.key==='Enter'){ e.preventDefault(); el.blur(); }
+    if(e.key==='Escape'){ el.innerText=state.todos.find(x=>x.id===id)?.text||''; el.blur(); }
+  };
+}
+let _todoDragId=null;
+function onTodoDragStart(e, id){
+  _todoDragId=id;
+  e.currentTarget.classList.add('dragging');
+  e.dataTransfer.effectAllowed='move';
+  e.dataTransfer.setData('text/plain', id);
+}
+function onTodoDragEnd(e){
+  e.currentTarget.classList.remove('dragging');
+  _todoDragId=null;
+  document.querySelectorAll('.todo-item').forEach(el=>el.classList.remove('drag-over'));
+}
+function onTodoDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+  const item=e.currentTarget;
+  document.querySelectorAll('.todo-item').forEach(el=>el.classList.remove('drag-over'));
+  if(item && item.dataset.id !== _todoDragId) item.classList.add('drag-over');
+}
+function onTodoDrop(e, targetId){
+  e.preventDefault();
+  const fromId=_todoDragId || e.dataTransfer.getData('text/plain');
+  if(!fromId || fromId===targetId) return;
+  const fromIdx=state.todos.findIndex(t=>t.id===fromId);
+  const toIdx=state.todos.findIndex(t=>t.id===targetId);
+  if(fromIdx<0 || toIdx<0) return;
+  const [item]=state.todos.splice(fromIdx,1);
+  state.todos.splice(toIdx,0,item);
+  save();
+  renderTodos();
+}
+function moveTodo(id, dir){
+  const idx=state.todos.findIndex(t=>t.id===id);
+  if(idx<0) return;
+  const newIdx=idx+dir;
+  if(newIdx<0 || newIdx>=state.todos.length) return;
+  const [item]=state.todos.splice(idx,1);
+  state.todos.splice(newIdx,0,item);
+  save();
+  renderTodos();
+}
 function renderTodos(){
   resetRepeatingTodos();
   const list=document.getElementById('todo-list');
   if(!state.todos.length){list.innerHTML='<div class="text-center text-slate-400 py-8">هنوز کاری ثبت نشده</div>';return;}
-  list.innerHTML=state.todos.map(t=>{
+  list.innerHTML=state.todos.map((t,i)=>{
     let dateStr='';if(t.jDate)dateStr=`<div class="text-xs text-slate-400 mt-0.5">${formatJalali(t.jDate.jy,t.jDate.jm,t.jDate.jd)}${t.time?' • '+t.time:''}</div>`;
     let repStr='';if(t.repeat)repStr=`<span class="inline-block text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-md mr-1">🔁 ${REPEAT_LABELS[t.repeat]||t.repeat}</span>`;
-    return `<div class="card p-3 flex items-start gap-3 ${t.done?'opacity-60':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTodo('${t.id}')" class="mt-1 scale-125" /><div class="flex-1"><div class="${t.done?'line-through':''}">${repStr}${t.text}</div>${dateStr}</div><button onclick="deleteTodo('${t.id}')" class="text-red-400 text-sm">حذف</button></div>`;
+    const upDisabled=i===0?'opacity-30 pointer-events-none':'';
+    const downDisabled=i===state.todos.length-1?'opacity-30 pointer-events-none':'';
+    return `<div class="card p-3 flex items-start gap-2 todo-item ${t.done?'opacity-60':''}" data-id="${t.id}"
+      draggable="true"
+      ondragstart="onTodoDragStart(event,'${t.id}')"
+      ondragend="onTodoDragEnd(event)"
+      ondragover="onTodoDragOver(event)"
+      ondrop="onTodoDrop(event,'${t.id}')">
+      <span class="todo-drag-handle" title="بکش برای جابجایی">⠿</span>
+      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTodo('${t.id}')" class="mt-1" />
+      <div class="flex-1 min-w-0">
+        <div class="flex items-start gap-1 flex-wrap">
+          ${repStr}
+          <div class="todo-text flex-1 ${t.done?'line-through':''}" ondblclick="startEditTodo(this,'${t.id}')" title="دوبار کلیک برای ویرایش">${escapeHtml(t.text)}</div>
+        </div>
+        ${dateStr}
+      </div>
+      <div class="flex flex-col gap-0.5 items-center">
+        <button type="button" onclick="moveTodo('${t.id}',-1)" class="text-slate-400 text-xs leading-none px-1 ${upDisabled}" title="بالاتر">▲</button>
+        <button type="button" onclick="moveTodo('${t.id}',1)" class="text-slate-400 text-xs leading-none px-1 ${downDisabled}" title="پایین‌تر">▼</button>
+      </div>
+      <button onclick="deleteTodo('${t.id}')" class="text-red-400 text-sm shrink-0">حذف</button>
+    </div>`;
   }).join('');
 }
 
