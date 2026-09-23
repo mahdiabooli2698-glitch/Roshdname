@@ -161,70 +161,6 @@
       background: #0d9488 !important; color: #fff !important;
       border: none; border-radius: 12px; font-weight: 600;
     }
-    /* —— اصلاح کنتراست فیلدها و گزینه‌ها —— */
-    input[type="text"],
-    input[type="number"],
-    input[type="search"],
-    input[type="time"],
-    textarea,
-    select {
-      border: 1.5px solid #94a3b8 !important;
-      background-color: #ffffff !important;
-      color: #1e293b !important;
-    }
-    input::placeholder,
-    textarea::placeholder {
-      color: #64748b !important;
-      opacity: 1 !important;
-    }
-    input[type="checkbox"] {
-      width: 1.15rem;
-      height: 1.15rem;
-      accent-color: #0d9488;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
-    .mood-btn, .mood-btn-r {
-      border: 1.5px solid #cbd5e1 !important;
-      background: #ffffff !important;
-    }
-    .mood-btn.ring-2, .mood-btn-r.ring-2,
-    .mood-btn.bg-primary-50, .mood-btn-r.bg-primary-50 {
-      border-color: #0d9488 !important;
-      background: #ccfbf1 !important;
-    }
-    .todo-item {
-      cursor: grab;
-      user-select: none;
-      transition: box-shadow .15s, opacity .15s, border-color .15s;
-    }
-    .todo-item.dragging {
-      opacity: 0.55;
-      border-color: #0d9488 !important;
-      box-shadow: 0 8px 20px rgba(13,148,136,.2);
-    }
-    .todo-item.drag-over {
-      border-color: #14b8a6 !important;
-      background: #f0fdfa !important;
-    }
-    .todo-item .todo-text {
-      cursor: text;
-      border-radius: 6px;
-      padding: 2px 4px;
-      min-height: 1.4em;
-    }
-    .todo-item .todo-text[contenteditable="true"] {
-      outline: 2px solid #0d9488;
-      background: #f0fdfa;
-      cursor: text;
-    }
-    .todo-drag-handle {
-      color: #94a3b8;
-      font-size: 14px;
-      padding: 0 2px;
-      cursor: grab;
-      flex-shrink: 0;
-    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-24">
@@ -240,20 +176,12 @@
                 <stop offset="0%" stop-color="#0f766e"/>
                 <stop offset="100%" stop-color="#14b8a6"/>
               </linearGradient>
-              <linearGradient id="leafG" x1="0" y1="1" x2="1" y2="0">
-                <stop offset="0%" stop-color="#ccfbf1"/>
-                <stop offset="100%" stop-color="#5eead4"/>
-              </linearGradient>
             </defs>
             <rect width="64" height="64" rx="14" fill="url(#logoGrad)"/>
-            <path d="M14 18 h16 c1.5 0 2.5 1 2 2.5 v28 c0 1.5-1 2.5-2.5 2.5 H14 c-1.5 0-2.5-1-2.5-2.5 V20.5 c0-1.5 1-2.5 2.5-2.5z" fill="#fff" opacity="0.95"/>
-            <path d="M50 18 H34 c-1.5 0-2.5 1-2 2.5 v28 c0 1.5 1 2.5 2.5 2.5 H50 c1.5 0 2.5-1 2.5-2.5 V20.5 c0-1.5-1-2.5-2.5-2.5z" fill="#fff" opacity="0.95"/>
-            <rect x="30" y="19" width="4" height="30" rx="1" fill="#0f766e" opacity="0.3"/>
-            <path d="M32 42 C32 36 31 32 30 28" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
-            <path d="M30 29 C22 24 18 28 20 34 C25 32 28 31 30 29Z" fill="url(#leafG)" stroke="#0f766e" stroke-width="1"/>
-            <path d="M31 29 C39 24 44 28 42 34 C37 32 34 31 31 29Z" fill="url(#leafG)" stroke="#0f766e" stroke-width="1"/>
-            <circle cx="32" cy="26" r="3.2" fill="#ccfbf1" stroke="#0f766e" stroke-width="1"/>
-            <circle cx="32" cy="26" r="1.4" fill="#5eead4"/>
+            <path d="M14 44 V22 c0-2 1.5-3.5 3.5-3.5 H30 c1.2 0 2.2.5 3 1.3 c.8-.8 1.8-1.3 3-1.3 h12.5 c2 0 3.5 1.5 3.5 3.5 v22" fill="none" stroke="#fff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M32 19.5 V44" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M32 28 c-3-5-8-6-10-4 c2 4 6 6 10 7 c4-1 8-3 10-7 c-2-2-7-1-10 4z" fill="#ccfbf1"/>
+            <circle cx="32" cy="26" r="2.2" fill="#fff"/>
           </svg>
         </div>
         <div>
@@ -827,7 +755,8 @@
         <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)" />
       </div>
 
-      <button onclick="if(confirm('همه داده‌های این دستگاه پاک شود؟')){localStorage.clear();location.reload()}" class="w-full bg-red-50 text-red-600 py-3 rounded-xl font-medium">🗑️ پاک کردن همه (این دستگاه)</button>
+      <button type="button" onclick="restoreFromSafety()" class="w-full bg-amber-50 text-amber-800 py-3 rounded-xl font-medium border border-amber-200">🛟 بازیابی نسخهٔ ایمنی محلی</button>
+      <button onclick="if(confirm('همه داده‌های این دستگاه پاک شود؟')){localStorage.removeItem(STORAGE_KEY);localStorage.removeItem(SAFETY_KEY);indexedDB.deleteDatabase(IDB_NAME);location.reload()}" class="w-full bg-red-50 text-red-600 py-3 rounded-xl font-medium">🗑️ پاک کردن همه (این دستگاه)</button>
     </div>
   </main>
 
@@ -916,6 +845,17 @@ function toKey(y,m,d){return `${y}-${String(m).padStart(2,'0')}-${String(d).padS
 function escapeHtml(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+function toEnDigits(s){
+  return String(s==null?'':s)
+    .replace(/[۰-۹]/g, function(d){ return '۰۱۲۳۴۵۶۷۸۹'.indexOf(d); })
+    .replace(/[٠-٩]/g, function(d){ return '٠١٢٣٤٥٦٧٨٩'.indexOf(d); })
+    .replace(/[٬,]/g,'')
+    .trim();
+}
+function parseNum(s){
+  const n = parseFloat(toEnDigits(s));
+  return isNaN(n) ? 0 : n;
+}
 function todayKey(){const n=new Date();return toKey(n.getFullYear(),n.getMonth()+1,n.getDate());}
 function formatJalali(y,m,d){return `${d} ${JALALI_MONTHS[m-1]} ${y}`;}
 function formatBoth(gy,gm,gd){const [jy,jm,jd]=gregorianToJalali(gy,gm,gd);return{jalali:formatJalali(jy,jm,jd),greg:`${gd} ${GREG_MONTHS[gm-1]} ${gy}`,jy,jm,jd,gy,gm,gd};}
@@ -923,6 +863,20 @@ function formatBoth(gy,gm,gd){const [jy,jm,jd]=gregorianToJalali(gy,gm,gd);retur
 /* ========== A/C. STATE + PERSISTENCE ========== */
 const STORAGE_KEY='lifeJournal_v4';
 const SAFETY_KEY='lifeJournal_safety_v4';
+function journalIsEmpty(d){
+  if(!d) return true;
+  if(Object.keys(d.reports||{}).length) return false;
+  if((d.todos||[]).length) return false;
+  if((d.subjects||[]).length) return false;
+  if(Object.keys(d.reflections||{}).length) return false;
+  if(Object.keys(d.openingBalances||{}).length) return false;
+  const g=d.goals||{};
+  if((g.weekStudyMin||0)>0 || (g.monthStudyMin||0)>0) return false;
+  const b=d.budget||{};
+  if(b.expenseLimit||b.savingsGoal||b.incomeGoal||b.savingsValue) return false;
+  if((d.profile&&(d.profile.name||d.profile.id))) return false;
+  return true;
+}
 function backupLocalSafety(){
   try{
     const raw=localStorage.getItem(STORAGE_KEY);
@@ -934,12 +888,14 @@ function restoreLocalSafetyIfEmpty(){
     const cur=localStorage.getItem(STORAGE_KEY);
     let empty=!cur;
     if(cur){
-      const d=JSON.parse(cur);
-      empty=!(Object.keys(d.reports||{}).length || (d.todos||[]).length);
+      try{ empty=journalIsEmpty(JSON.parse(cur)); }catch(e){ empty=true; }
     }
     if(!empty) return false;
     const safe=localStorage.getItem(SAFETY_KEY);
     if(!safe) return false;
+    try{
+      if(journalIsEmpty(JSON.parse(safe))) return false;
+    }catch(e){ return false; }
     localStorage.setItem(STORAGE_KEY, safe);
     return true;
   }catch(e){ return false; }
@@ -957,39 +913,44 @@ let state={
 const IDB_NAME='roshdnameh_idb', IDB_STORE='journal';
 
 
+function applyLoadedData(d){
+  if(!d) return;
+  state.subjects=d.subjects||[];
+  state.reports=d.reports||{};
+  state.todos=d.todos||[];
+  state.profile=d.profile||{name:'',id:''};
+  state.budget=Object.assign({expenseLimit:0,savingsGoal:0,incomeGoal:0,savingsValue:0},d.budget||{});
+  state.openingBalances=d.openingBalances||{};
+  state.goals=Object.assign({weekStudyMin:0,monthStudyMin:0},d.goals||{});
+  state.modules=Object.assign({trade:true,calories:true,nonstudy:true,exercise:true,sleep:true,finance:true,plans:true,gratitude:true},d.modules||{});
+  state.reviewedMistakes=d.reviewedMistakes||{};
+  state.reflections=d.reflections||{};
+}
 function load(){
   try{
     restoreLocalSafetyIfEmpty();
     const raw=localStorage.getItem(STORAGE_KEY)||localStorage.getItem('lifeJournal_v3')||localStorage.getItem('lifeJournal_v2');
-    if(raw){
-      const d=JSON.parse(raw);
-      state.subjects=d.subjects||[];
-      state.reports=d.reports||{};
-      state.todos=d.todos||[];
-      state.profile=d.profile||{name:'',id:''};
-      state.budget=Object.assign({expenseLimit:0,savingsGoal:0,incomeGoal:0,savingsValue:0},d.budget||{});
-      state.openingBalances=d.openingBalances||{};
-      state.goals=Object.assign({weekStudyMin:0,monthStudyMin:0},d.goals||{});
-      state.modules=Object.assign({trade:true,calories:true,nonstudy:true,exercise:true,sleep:true,finance:true,plans:true,gratitude:true},d.modules||{});
-      state.reviewedMistakes=d.reviewedMistakes||{};
-      state.reflections=d.reflections||{};
-    }
-  }catch(e){}
+    if(raw) applyLoadedData(JSON.parse(raw));
+  }catch(e){ console.warn('load', e); }
   const n=new Date();const [jy,jm]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());
   state.currentMonth={jy,jm};updateProfileBadge();
 }
+function persistLocal(data){
+  if(!data) data=payload();
+  try{
+    const str=JSON.stringify(data);
+    localStorage.setItem(STORAGE_KEY, str);
+    localStorage.setItem(SAFETY_KEY, str);
+  }catch(e){
+    console.warn('localStorage full', e);
+    if(typeof toast==='function') toast('حافظهٔ مرورگر پر شد — خروجی JSON بگیر', true);
+  }
+  idbSetNow(data);
+}
 function save(){
   const data=payload();
-  try{
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
-    localStorage.setItem(SAFETY_KEY,JSON.stringify(data));
-  }catch(e){
-    console.warn('localStorage full',e);
-    toast('حافظهٔ مرورگر پر شد — خروجی JSON بگیر', true);
-  }
-  idbSet(data);
-  // اگر وارد حسابی، خودکار به ابر هم بچسبد (وقتی آنلاین)
-  if(currentUser && cloudReady && navigator.onLine!==false){
+  persistLocal(data);
+  if(currentUser && cloudReady && typeof navigator!=='undefined' && navigator.onLine!==false){
     state.cloudAutoSync = true;
   }
   scheduleCloudSave();
@@ -998,7 +959,6 @@ function save(){
 function scheduleCloudSave(){
   if(!currentUser||!cloudReady) return;
   if(typeof navigator!=='undefined' && navigator.onLine===false) return;
-  // بعد از ورود: خودکار به جیمیل می‌چسبد (debounce)
   clearTimeout(saveTimer);
   saveTimer=setTimeout(function(){ saveToCloud(true); }, 2500);
 }
@@ -1021,22 +981,19 @@ function payload(){
 
 function reportTs(r){
   if(!r) return 0;
-  const t = Date.parse(r.updatedAt||'')||0;
-  return t;
+  return Date.parse(r.updatedAt||'')||0;
 }
 function isReportRicher(a,b){
   if(!b) return true;
   if(!a) return false;
   const ma = typeof isReportMeaningful==='function' ? isReportMeaningful(a) : !!(a&&(a.diary||a.studies));
   const mb = typeof isReportMeaningful==='function' ? isReportMeaningful(b) : !!(b&&(b.diary||b.studies));
-  // همیشه دادهٔ معنی‌دار بر خالی اولویت دارد (جلوگیری از پریدن نوشتهٔ آفلاین)
   if(ma && !mb) return true;
   if(!ma && mb) return false;
   const ta=reportTs(a), tb=reportTs(b);
   if(ta!==tb) return ta>tb;
   return JSON.stringify(a).length >= JSON.stringify(b).length;
 }
-/** ادغام ابر و محلی — هیچ‌کدام را بی‌دلیل دور نریز */
 function mergeJournal(local, cloud){
   local = local || {};
   cloud = cloud || {};
@@ -1053,118 +1010,95 @@ function mergeJournal(local, cloud){
     reflections: Object.assign({}, cloud.reflections||{}, local.reflections||{}),
     updatedAt: new Date().toISOString()
   };
-  // reports: کلیدروز → نسخهٔ جدیدتر/غنی‌تر
-  const allKeys = new Set([
-    ...Object.keys(cloud.reports||{}),
-    ...Object.keys(local.reports||{})
-  ]);
-  allKeys.forEach(k=>{
+  const allKeys = new Set([].concat(Object.keys(cloud.reports||{}), Object.keys(local.reports||{})));
+  allKeys.forEach(function(k){
     const L=(local.reports||{})[k], C=(cloud.reports||{})[k];
-    if(isReportRicher(L,C)) out.reports[k]=L;
-    else out.reports[k]=C;
+    out.reports[k] = isReportRicher(L,C) ? L : C;
   });
-  // todos: بر اساس id
   const todoMap={};
-  (cloud.todos||[]).forEach(t=>{ if(t&&t.id) todoMap[t.id]=t; });
-  (local.todos||[]).forEach(t=>{
+  (cloud.todos||[]).forEach(function(t){ if(t&&t.id) todoMap[t.id]=t; });
+  (local.todos||[]).forEach(function(t){
     if(!t||!t.id) return;
     const prev=todoMap[t.id];
     if(!prev){ todoMap[t.id]=t; return; }
     const tl=Date.parse(t.lastDoneDate||t.updatedAt||0)||0;
     const tp=Date.parse(prev.lastDoneDate||prev.updatedAt||0)||0;
-    // اگر محلی done شده و ابر نه، محلی
     if(t.done && !prev.done) todoMap[t.id]=t;
     else if(tl>=tp) todoMap[t.id]=Object.assign({},prev,t);
   });
   out.todos=Object.values(todoMap);
-  // subjects: اتحاد بر اساس نام
   const subMap={};
-  (cloud.subjects||[]).concat(local.subjects||[]).forEach(s=>{
+  (cloud.subjects||[]).concat(local.subjects||[]).forEach(function(s){
     if(!s||!s.name) return;
     const key=(s.name||'').trim().replace(/\s+/g,' ');
-    if(!key) return;
-    if(!subMap[key]) subMap[key]=s;
+    if(key && !subMap[key]) subMap[key]=s;
   });
   out.subjects=Object.values(subMap);
   return out;
 }
 function applyPayload(d, mode){
-  // mode: 'replace' (قدیمی) | 'merge' (پیش‌فرض امن)
   if(!d) return;
   if(mode==='replace'){
-    if(d.subjects) state.subjects=d.subjects;
-    if(d.reports) state.reports=d.reports;
-    if(d.todos) state.todos=d.todos;
-    if(d.profile) state.profile=d.profile;
-    if(d.budget) state.budget=d.budget;
-    if(d.openingBalances) state.openingBalances=d.openingBalances;
-    if(d.goals) state.goals=d.goals;
-    if(d.modules) state.modules=Object.assign(state.modules||{},d.modules);
-    if(d.reviewedMistakes) state.reviewedMistakes=d.reviewedMistakes;
-    if(d.reflections) state.reflections=d.reflections;
+    applyLoadedData(d);
   } else {
-    const local = payload();
-    const merged = mergeJournal(local, d);
-    state.subjects=merged.subjects;
-    state.reports=merged.reports;
-    state.todos=merged.todos;
-    state.profile=merged.profile||state.profile;
-    state.budget=Object.assign(state.budget||{}, merged.budget||{});
-    state.openingBalances=merged.openingBalances||{};
-    state.goals=Object.assign(state.goals||{}, merged.goals||{});
-    state.modules=Object.assign(state.modules||{}, merged.modules||{});
-    state.reviewedMistakes=merged.reviewedMistakes||{};
-    state.reflections=merged.reflections||{};
+    const merged = mergeJournal(payload(), d);
+    applyLoadedData(merged);
   }
   saveLocalOnly();
   updateProfileBadge();
-  renderCalendar();
-  updateStreakUI();
-  renderHomeBudget();
+  if(typeof renderCalendar==='function') renderCalendar();
+  if(typeof updateStreakUI==='function') updateStreakUI();
+  if(typeof renderHomeBudget==='function') renderHomeBudget();
   if(typeof renderHomeGoals==='function') renderHomeGoals();
   if(typeof renderConsistency==='function') renderConsistency();
 }
 function saveLocalOnly(){
-  const data=payload();
-  try{ localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); }catch(e){ console.warn(e); }
-  idbSet(data);
+  persistLocal(payload());
 }
 function idbOpen(){
-  return new Promise((resolve,reject)=>{
+  return new Promise(function(resolve,reject){
     const req=indexedDB.open(IDB_NAME,1);
-    req.onupgradeneeded=()=>{ const db=req.result; if(!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE); };
-    req.onsuccess=()=>resolve(req.result);
-    req.onerror=()=>reject(req.error);
+    req.onupgradeneeded=function(){ const db=req.result; if(!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE); };
+    req.onsuccess=function(){ resolve(req.result); };
+    req.onerror=function(){ reject(req.error); };
   });
 }
-let idbTimer=null, idbPending=null;
-function idbSet(data){
-  idbPending=data;
-  clearTimeout(idbTimer);
-  idbTimer=setTimeout(function(){ idbSetNow(idbPending); }, 400);
-}
+function idbSet(data){ idbSetNow(data); }
 async function idbSetNow(data){
   if(!data) return;
   try{
     const db=await idbOpen();
-    await new Promise((resolve,reject)=>{
+    await new Promise(function(resolve,reject){
       const tx=db.transaction(IDB_STORE,'readwrite');
       tx.objectStore(IDB_STORE).put(data,'main');
-      tx.oncomplete=()=>resolve();
-      tx.onerror=()=>reject(tx.error);
+      tx.oncomplete=function(){ resolve(); };
+      tx.onerror=function(){ reject(tx.error); };
     });
   }catch(e){ console.warn('idb set',e); }
 }
 async function idbGet(){
   try{
     const db=await idbOpen();
-    return await new Promise((resolve,reject)=>{
-      const tx=db.transaction(IDB_STORE,'readonly');
-      const req=tx.objectStore(IDB_STORE).get('main');
-      req.onsuccess=()=>resolve(req.result||null);
-      req.onerror=()=>reject(req.error);
+    return await new Promise(function(resolve,reject){
+      const req=db.transaction(IDB_STORE,'readonly').objectStore(IDB_STORE).get('main');
+      req.onsuccess=function(){ resolve(req.result||null); };
+      req.onerror=function(){ reject(req.error); };
     });
   }catch(e){ return null; }
+}
+async function hydrateFromBestSource(){
+  try{
+    const idbData = await idbGet();
+    if(!idbData || journalIsEmpty(idbData)) return;
+    const local = payload();
+    const lsTs = Date.parse(local.updatedAt||0)||0;
+    const idbTs = Date.parse(idbData.updatedAt||0)||0;
+    if(journalIsEmpty(local) || idbTs > lsTs){
+      applyPayload(idbData, 'merge');
+      setSyncBanner('بازیابی از حافظهٔ قوی محلی', true);
+      setTimeout(function(){ setSyncBanner('', false); }, 2500);
+    }
+  }catch(e){ console.warn('hydrate', e); }
 }
 
 /* ========== D. AUTH + CLOUD ========== */
@@ -1241,14 +1175,17 @@ async function saveToCloud(silent){
       email: currentUser.email||'',
       updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
+    clearTimeout(cloudTimeout);
     setSyncBanner('ذخیره روی حساب شما ✓', true);
     setTimeout(()=>setSyncBanner('', false), 2000);
     if(!silent) toast('پشتیبان روی حساب گوگل ذخیره شد');
     return true;
   }catch(err){
+    clearTimeout(cloudTimeout);
     console.error(err);
-    setSyncBanner('خطا در ذخیره ابری', true);
-    if(!silent) alert('خطا در ذخیره ابری: '+err.message);
+    setSyncBanner('خطا در ابر — داده روی گوشی ماند', true);
+    setTimeout(()=>setSyncBanner('', false), 3500);
+    if(!silent) toast('خطا در ابر: داده محلی حفظ شد', true);
     return false;
   }
 }
@@ -1381,20 +1318,22 @@ function showPage(name){
   if(name==='weekly'){initYearSelects();renderWeeklyList();loadWeeklyReflectionForm();}
   if(name==='monthly'){initYearSelects(); (function(){const n=new Date();const [,jm]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());const el=document.getElementById('monthly-pdf-month'); if(el && !el.dataset.inited){el.value=jm;el.dataset.inited='1';}})(); renderMonthlyList();}
   if(name==='settings'){
-    document.getElementById('profile-name').value=state.profile.name||'';
-    document.getElementById('profile-id').value=state.profile.id||'';
+    const setV=function(id,v){ const el=document.getElementById(id); if(el) el.value=(v!=null&&v!==0&&v!=='')?v:''; };
+    setV('profile-name', (state.profile&&state.profile.name)||'');
+    setV('profile-id', (state.profile&&state.profile.id)||'');
     const b=state.budget||{};
-    document.getElementById('budget-expense-limit').value=b.expenseLimit||'';
-    document.getElementById('budget-savings-goal').value=b.savingsGoal||'';
-    document.getElementById('budget-income-goal').value=b.incomeGoal||'';
-    const sv=document.getElementById('budget-savings-value'); if(sv) sv.value=b.savingsValue||'';
+    setV('budget-expense-limit', b.expenseLimit||'');
+    setV('budget-savings-goal', b.savingsGoal||'');
+    setV('budget-income-goal', b.incomeGoal||'');
+    setV('budget-savings-value', b.savingsValue||'');
     const g=state.goals||{};
-    const gw=document.getElementById('goal-week-study'); if(gw) gw.value=g.weekStudyMin||'';
-    const gm=document.getElementById('goal-month-study'); if(gm) gm.value=g.monthStudyMin||'';
+    setV('goal-week-study', g.weekStudyMin||'');
+    setV('goal-month-study', g.monthStudyMin||'');
     document.querySelectorAll('#module-toggles input[data-mod]').forEach(inp=>{
       const k=inp.getAttribute('data-mod');
       inp.checked = state.modules && state.modules[k] !== false;
     });
+    bindSettingsAutoSave();
     updateAuthUI();
     updateLastSaveHint();
   }
@@ -1883,111 +1822,28 @@ function toggleTodo(id){
   save();renderTodos();
 }
 function deleteTodo(id){state.todos=state.todos.filter(x=>x.id!==id);save();renderTodos();}
-function startEditTodo(el, id){
-  if(el.getAttribute('contenteditable')==='true') return;
-  el.setAttribute('contenteditable','true');
-  el.focus();
-  const item=el.closest('.todo-item');
-  if(item) item.draggable=false;
-  try{
-    const range=document.createRange();
-    range.selectNodeContents(el);
-    const sel=window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-  }catch(e){}
-  const finish=()=>{
-    el.removeAttribute('contenteditable');
-    el.onblur=null;
-    el.onkeydown=null;
-    if(item) item.draggable=true;
-    const newText=(el.innerText||'').trim();
-    const t=state.todos.find(x=>x.id===id);
-    if(t && newText && newText!==t.text){
-      t.text=newText;
-      save();
-    } else if(t && !newText){
-      el.innerText=t.text;
-    }
-    renderTodos();
-  };
-  el.onblur=finish;
-  el.onkeydown=(e)=>{
-    if(e.key==='Enter'){ e.preventDefault(); el.blur(); }
-    if(e.key==='Escape'){ el.innerText=state.todos.find(x=>x.id===id)?.text||''; el.blur(); }
-  };
-}
-let _todoDragId=null;
-function onTodoDragStart(e, id){
-  _todoDragId=id;
-  e.currentTarget.classList.add('dragging');
-  e.dataTransfer.effectAllowed='move';
-  e.dataTransfer.setData('text/plain', id);
-}
-function onTodoDragEnd(e){
-  e.currentTarget.classList.remove('dragging');
-  _todoDragId=null;
-  document.querySelectorAll('.todo-item').forEach(el=>el.classList.remove('drag-over'));
-}
-function onTodoDragOver(e){
-  e.preventDefault();
-  e.dataTransfer.dropEffect='move';
-  const item=e.currentTarget;
-  document.querySelectorAll('.todo-item').forEach(el=>el.classList.remove('drag-over'));
-  if(item && item.dataset.id !== _todoDragId) item.classList.add('drag-over');
-}
-function onTodoDrop(e, targetId){
-  e.preventDefault();
-  const fromId=_todoDragId || e.dataTransfer.getData('text/plain');
-  if(!fromId || fromId===targetId) return;
-  const fromIdx=state.todos.findIndex(t=>t.id===fromId);
-  const toIdx=state.todos.findIndex(t=>t.id===targetId);
-  if(fromIdx<0 || toIdx<0) return;
-  const [item]=state.todos.splice(fromIdx,1);
-  state.todos.splice(toIdx,0,item);
-  save();
-  renderTodos();
-}
-function moveTodo(id, dir){
-  const idx=state.todos.findIndex(t=>t.id===id);
-  if(idx<0) return;
-  const newIdx=idx+dir;
-  if(newIdx<0 || newIdx>=state.todos.length) return;
-  const [item]=state.todos.splice(idx,1);
-  state.todos.splice(newIdx,0,item);
-  save();
-  renderTodos();
+function editTodo(id){
+  const t=state.todos.find(x=>x.id===id); if(!t) return;
+  const nt=prompt('ویرایش کار:', t.text);
+  if(nt===null) return;
+  const trimmed=nt.trim();
+  if(!trimmed){ toast('متن خالی مجاز نیست', true); return; }
+  t.text=trimmed;
+  save(); renderTodos(); toast('ویرایش شد');
 }
 function renderTodos(){
   resetRepeatingTodos();
   const list=document.getElementById('todo-list');
+  if(!list) return;
   if(!state.todos.length){list.innerHTML='<div class="text-center text-slate-400 py-8">هنوز کاری ثبت نشده</div>';return;}
-  list.innerHTML=state.todos.map((t,i)=>{
-    let dateStr='';if(t.jDate)dateStr=`<div class="text-xs text-slate-400 mt-0.5">${formatJalali(t.jDate.jy,t.jDate.jm,t.jDate.jd)}${t.time?' • '+t.time:''}</div>`;
-    let repStr='';if(t.repeat)repStr=`<span class="inline-block text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-md mr-1">🔁 ${REPEAT_LABELS[t.repeat]||t.repeat}</span>`;
-    const upDisabled=i===0?'opacity-30 pointer-events-none':'';
-    const downDisabled=i===state.todos.length-1?'opacity-30 pointer-events-none':'';
-    return `<div class="card p-3 flex items-start gap-2 todo-item ${t.done?'opacity-60':''}" data-id="${t.id}"
-      draggable="true"
-      ondragstart="onTodoDragStart(event,'${t.id}')"
-      ondragend="onTodoDragEnd(event)"
-      ondragover="onTodoDragOver(event)"
-      ondrop="onTodoDrop(event,'${t.id}')">
-      <span class="todo-drag-handle" title="بکش برای جابجایی">⠿</span>
-      <input type="checkbox" ${t.done?'checked':''} onchange="toggleTodo('${t.id}')" class="mt-1" />
-      <div class="flex-1 min-w-0">
-        <div class="flex items-start gap-1 flex-wrap">
-          ${repStr}
-          <div class="todo-text flex-1 ${t.done?'line-through':''}" ondblclick="startEditTodo(this,'${t.id}')" title="دوبار کلیک برای ویرایش">${escapeHtml(t.text)}</div>
-        </div>
-        ${dateStr}
-      </div>
-      <div class="flex flex-col gap-0.5 items-center">
-        <button type="button" onclick="moveTodo('${t.id}',-1)" class="text-slate-400 text-xs leading-none px-1 ${upDisabled}" title="بالاتر">▲</button>
-        <button type="button" onclick="moveTodo('${t.id}',1)" class="text-slate-400 text-xs leading-none px-1 ${downDisabled}" title="پایین‌تر">▼</button>
-      </div>
-      <button onclick="deleteTodo('${t.id}')" class="text-red-400 text-sm shrink-0">حذف</button>
-    </div>`;
+  list.innerHTML=state.todos.map(t=>{
+    let dateStr='';if(t.jDate)dateStr='<div class="text-xs text-slate-400 mt-0.5">'+formatJalali(t.jDate.jy,t.jDate.jm,t.jDate.jd)+(t.time?' • '+t.time:'')+'</div>';
+    let repStr='';if(t.repeat)repStr='<span class="inline-block text-[10px] bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded-md mr-1">🔁 '+(REPEAT_LABELS[t.repeat]||t.repeat)+'</span>';
+    return '<div class="card p-3 flex items-start gap-3 '+(t.done?'opacity-60':'')+'">'
+      +'<input type="checkbox" '+(t.done?'checked':'')+' onchange="toggleTodo(\''+t.id+'\')" class="mt-1 scale-125" />'
+      +'<div class="flex-1 min-w-0"><div class="'+(t.done?'line-through':'')+'">'+repStr+escapeHtml(t.text)+'</div>'+dateStr+'</div>'
+      +'<button type="button" onclick="editTodo(\''+t.id+'\')" class="text-primary-600 text-sm shrink-0">ویرایش</button>'
+      +'<button type="button" onclick="deleteTodo(\''+t.id+'\')" class="text-red-400 text-sm shrink-0">حذف</button></div>';
   }).join('');
 }
 
@@ -3031,14 +2887,14 @@ function clearOpeningBalance(monthKey){
   if(parts.length===2) showMonthDetail(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[1])-1);
 }
 function saveBudget(){
-  state.budget={
-    expenseLimit:parseInt(document.getElementById('budget-expense-limit').value)||0,
-    savingsGoal:parseInt(document.getElementById('budget-savings-goal').value)||0,
-    incomeGoal:parseInt(document.getElementById('budget-income-goal').value)||0,
-    savingsValue:parseInt(document.getElementById('budget-savings-value').value)||0
-  };
+  if(!state.budget) state.budget={};
+  state.budget.expenseLimit = Math.round(parseNum((document.getElementById('budget-expense-limit')||{}).value));
+  state.budget.savingsGoal = Math.round(parseNum((document.getElementById('budget-savings-goal')||{}).value));
+  state.budget.incomeGoal = Math.round(parseNum((document.getElementById('budget-income-goal')||{}).value));
+  const sv=document.getElementById('budget-savings-value');
+  if(sv) state.budget.savingsValue = Math.round(parseNum(sv.value));
   save();
-  renderHomeBudget();
+  if(typeof renderHomeBudget==='function') renderHomeBudget();
   toast('بودجه ذخیره شد');
 }
 function currentMonthFinance(){
@@ -3071,7 +2927,12 @@ function renderHomeBudget(){
   row('دخل ماه', data.income||0, b.incomeGoal, false);
   body.innerHTML = lines.join('') || '<p class="text-xs text-slate-400">بودجه تعریف شده؛ با ثبت گزارش روزانه پیشرفت پر می‌شود.</p>';
 }
-function saveProfile(){state.profile.name=document.getElementById('profile-name').value.trim();state.profile.id=document.getElementById('profile-id').value.trim();save();updateProfileBadge();toast('ذخیره شد');}
+function saveProfile(){
+  if(!state.profile) state.profile={name:'',id:''};
+  state.profile.name=((document.getElementById('profile-name')||{}).value||'').trim();
+  state.profile.id=((document.getElementById('profile-id')||{}).value||'').trim();
+  save(); updateProfileBadge(); toast('پروفایل ذخیره شد');
+}
 function exportData(){
   const data=JSON.stringify(payload(),null,2);
   const blob=new Blob([data],{type:'application/json'});
@@ -3149,10 +3010,11 @@ function saveModules(){
 }
 function saveGoals(){
   state.goals={
-    weekStudyMin:parseInt(document.getElementById('goal-week-study').value)||0,
-    monthStudyMin:parseInt(document.getElementById('goal-month-study').value)||0
+    weekStudyMin:Math.round(parseNum((document.getElementById('goal-week-study')||{}).value)),
+    monthStudyMin:Math.round(parseNum((document.getElementById('goal-month-study')||{}).value))
   };
-  save(); renderHomeGoals();
+  save();
+  if(typeof renderHomeGoals==='function') renderHomeGoals();
   toast('اهداف ذخیره شد');
 }
 function renderHomeGoals(){
@@ -3324,21 +3186,47 @@ function updateLastSaveHint(){
   }catch(e){ el.textContent=''; }
 }
 
+function bindSettingsAutoSave(){
+  if(bindSettingsAutoSave._done) return;
+  bindSettingsAutoSave._done = true;
+  const ids = ['goal-week-study','goal-month-study','profile-name','profile-id',
+    'budget-expense-limit','budget-savings-goal','budget-income-goal','budget-savings-value'];
+  ids.forEach(function(id){
+    const el = document.getElementById(id);
+    if(!el) return;
+    el.addEventListener('change', function(){
+      if(id.indexOf('goal')===0) saveGoals();
+      else if(id.indexOf('profile')===0) saveProfile();
+      else saveBudget();
+    });
+    el.addEventListener('blur', function(){
+      if(id.indexOf('goal')===0) saveGoals();
+      else if(id.indexOf('profile')===0) saveProfile();
+      else saveBudget();
+    });
+  });
+  document.querySelectorAll('#module-toggles input[data-mod]').forEach(function(inp){
+    inp.addEventListener('change', function(){ saveModules(); });
+  });
+}
+
+function restoreFromSafety(){
+  try{
+    const safe=localStorage.getItem(SAFETY_KEY);
+    if(!safe){ toast('نسخهٔ ایمنی پیدا نشد', true); return; }
+    if(!confirm('دادهٔ فعلی با نسخهٔ ایمنی جایگزین شود؟')) return;
+    localStorage.setItem(STORAGE_KEY, safe);
+    applyLoadedData(JSON.parse(safe));
+    persistLocal(payload());
+    toast('از نسخهٔ ایمنی بازیابی شد');
+    showPage('home');
+  }catch(e){ toast('خطا در بازیابی', true); }
+}
+
 /* ========== G. BOOT ========== */
 
 load();
-(async function hydrateFromIdb(){
-  try{
-    const hasLocal=Object.keys(state.reports||{}).length||(state.todos||[]).length;
-    if(hasLocal) return;
-    const d=await idbGet();
-    if(d && (d.reports||d.todos||d.subjects)){
-      applyPayload(d);
-      setSyncBanner('بازیابی از حافظهٔ محلی قوی‌تر', true);
-      setTimeout(()=>setSyncBanner('',false),2500);
-    }
-  }catch(e){}
-})();
+hydrateFromBestSource();
 // پاک‌سازی گزارش‌های خالی قدیمی که تقویم را روی روزهای قبلی گیر می‌انداختند
 (function purgeEmptyReports(){
   let changed=false;

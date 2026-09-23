@@ -1,4 +1,4 @@
-const CACHE = 'roshdnameh-v9';
+const CACHE = 'roshdnameh-v7';
 const ASSETS = [
   './',
   './index.html',
