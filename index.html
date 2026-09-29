@@ -26,7 +26,7 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230f766e'/%3E%3Cstop offset='100%25' stop-color='%2314b8a6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath d='M14 44 V22 c0-2 1.5-3.5 3.5-3.5 H30 c1.2 0 2.2.5 3 1.3 c.8-.8 1.8-1.3 3-1.3 h12.5 c2 0 3.5 1.5 3.5 3.5 v22' fill='none' stroke='%23fff' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M32 19.5 V44' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M32 28 c-3-5-8-6-10-4 c2 4 6 6 10 7 c4-1 8-3 10-7 c-2-2-7-1-10 4z' fill='%23ccfbf1'/%3E%3Ccircle cx='32' cy='26' r='2.2' fill='%23fff'/%3E%3C/svg%3E" />
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%230f766e'/%3E%3Cstop offset='100%25' stop-color='%2314b8a6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Cpath d='M14 44 V22 c0-2 1.5-3.5 3.5-3.5 H30 c1.2 0 2.2.5 3 1.3 c.8-.8 1.8-1.3 3-1.3 h12.5 c2 0 3.5 1.5 3.5 3.5 v22' fill='none' stroke='%23fff' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M32 19.5 V44' stroke='%23fff' stroke-width='2.2' stroke-linecap='round'/%3E%3Cpath d='M32 28 c-3-5-8-6-10-4 c2 4 6 6 10 7 c4-1 8-3 10-7 c-2-2-7-1-10 4z' fill='%23ccfbf1'/%3E%3Ccircle cx='32' cy='26' r='2.2' fill='%23fff'/%3E%3C/svg%3E" />
   <!-- اسکریپت‌های خارجی با defer تا UI اول لود شود؛ بدون نت هم اپ محلی کار می‌کند -->
-  <script src="https://cdn.tailwindcss.com" defer></script>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
@@ -161,6 +161,189 @@
       background: #0d9488 !important; color: #fff !important;
       border: none; border-radius: 12px; font-weight: 600;
     }
+
+    /* —— لایهٔ چیدمان آفلاین (اگر Tailwind لود نشود صفحه به‌هم نمی‌ریزد) —— */
+    body { margin: 0; color: #1e293b; min-height: 100vh; padding-bottom: 5.5rem; }
+    main#app { max-width: 48rem; margin: 0 auto; padding: 1rem 0.75rem; }
+    main#app > .tab-content.active > * + * { margin-top: 1rem; }
+    .card { padding: 1rem; }
+    .card.p-3 { padding: 0.75rem; }
+    .card.p-4 { padding: 1rem; }
+
+    .flex { display: flex !important; }
+    .flex-1 { flex: 1 1 0%; min-width: 0; }
+    .flex-col { flex-direction: column; }
+    .flex-wrap { flex-wrap: wrap; }
+    .items-center { align-items: center; }
+    .items-start { align-items: flex-start; }
+    .items-end { align-items: flex-end; }
+    .justify-between { justify-content: space-between; }
+    .justify-center { justify-content: center; }
+    .gap-1 { gap: 0.25rem; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .space-y-0\.5 > * + * { margin-top: 0.125rem; }
+    .space-y-1 > * + * { margin-top: 0.25rem; }
+    .space-y-2 > * + * { margin-top: 0.5rem; }
+    .space-y-3 > * + * { margin-top: 0.75rem; }
+    .space-y-4 > * + * { margin-top: 1rem; }
+
+    .grid { display: grid !important; }
+    .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-cols-7 { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+    .col-span-2 { grid-column: span 2 / span 2; }
+
+    .w-full { width: 100%; }
+    .w-10 { width: 2.5rem; } .h-10 { height: 2.5rem; }
+    .w-7 { width: 1.75rem; } .h-7 { height: 1.75rem; }
+    .w-28 { width: 7rem; }
+    .min-w-0 { min-width: 0; }
+    .shrink-0 { flex-shrink: 0; }
+
+    .p-1 { padding: 0.25rem; } .p-1\.5 { padding: 0.375rem; }
+    .p-2 { padding: 0.5rem; } .p-2\.5 { padding: 0.625rem; }
+    .p-3 { padding: 0.75rem; } .p-4 { padding: 1rem; }
+    .px-1 { padding-left: 0.25rem; padding-right: 0.25rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .px-2\.5 { padding-left: 0.625rem; padding-right: 0.625rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+    .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+    .mt-0\.5 { margin-top: 0.125rem; } .mt-1 { margin-top: 0.25rem; }
+    .mt-2 { margin-top: 0.5rem; } .mb-1 { margin-bottom: 0.25rem; }
+    .mb-2 { margin-top: 0; margin-bottom: 0.5rem; } .mb-3 { margin-bottom: 0.75rem; }
+    .-mt-2 { margin-top: -0.5rem; }
+
+    .text-left { text-align: left; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-base { font-size: 1rem; }
+    .text-lg { font-size: 1.125rem; }
+    .text-xl { font-size: 1.25rem; }
+    .text-2xl { font-size: 1.5rem; }
+    .text-3xl { font-size: 1.875rem; }
+    .text-\[10px\] { font-size: 10px; }
+    .text-\[11px\] { font-size: 11px; }
+    .font-medium { font-weight: 500; }
+    .font-bold { font-weight: 700; }
+    .leading-tight { line-height: 1.25; }
+    .leading-relaxed { line-height: 1.625; }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .whitespace-pre-wrap { white-space: pre-wrap; }
+    .line-through { text-decoration: line-through; }
+    .opacity-60 { opacity: 0.6; }
+    .hidden { display: none !important; }
+
+    .rounded-lg { border-radius: 0.5rem; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-full { border-radius: 9999px; }
+    .border { border: 1px solid #e2e8f0; }
+    .border-t { border-top: 1px solid #e2e8f0; }
+    .border-b { border-bottom: 1px solid #e2e8f0; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-x-auto { overflow-x: auto; }
+
+    .bg-white { background: #fff; }
+    .bg-slate-50 { background: #f8fafc; }
+    .bg-slate-100 { background: #f1f5f9; }
+    .bg-primary-50 { background: #f0fdfa; }
+    .bg-primary-100 { background: #ccfbf1; }
+    .bg-primary-500, .bg-primary-600 { background: #0d9488; color: #fff; }
+    .bg-primary-700 { background: #0f766e; color: #fff; }
+    .bg-indigo-50 { background: #eef2ff; }
+    .bg-indigo-100 { background: #e0e7ff; }
+    .bg-orange-50 { background: #fff7ed; }
+    .bg-orange-100 { background: #ffedd5; }
+    .bg-emerald-50 { background: #ecfdf5; }
+    .bg-emerald-100 { background: #d1fae5; }
+    .bg-amber-50 { background: #fffbeb; }
+    .bg-amber-100 { background: #fef3c7; }
+    .bg-sky-50 { background: #f0f9ff; }
+    .bg-violet-50 { background: #f5f3ff; }
+    .bg-red-50 { background: #fef2f2; }
+    .bg-green-600 { background: #16a34a; color: #fff; }
+    .bg-red-500 { background: #ef4444; color: #fff; }
+    .bg-sky-700 { background: #0369a1; color: #fff; }
+    .bg-teal-700 { background: #0f766e; color: #fff; }
+
+    .text-slate-400 { color: #94a3b8; }
+    .text-slate-500 { color: #64748b; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-700 { color: #334155; }
+    .text-slate-800 { color: #1e293b; }
+    .text-primary-600, .text-primary-700 { color: #0d9488; }
+    .text-primary-800, .text-primary-900 { color: #115e59; }
+    .text-indigo-600 { color: #4f46e5; }
+    .text-indigo-700, .text-indigo-800 { color: #3730a3; }
+    .text-orange-600 { color: #ea580c; }
+    .text-orange-800 { color: #9a3412; }
+    .text-emerald-600, .text-emerald-800 { color: #059669; }
+    .text-red-400, .text-red-500, .text-red-600 { color: #ef4444; }
+    .text-amber-800 { color: #92400e; }
+    .text-green-600 { color: #16a34a; }
+    .text-sky-900 { color: #0c4a6e; }
+    .text-teal-800, .text-teal-900 { color: #115e59; }
+    .text-violet-900 { color: #4c1d95; }
+    .text-blue-800 { color: #1e40af; }
+
+    .border-slate-200 { border-color: #e2e8f0; }
+    .border-primary-100, .border-primary-200 { border-color: #ccfbf1; }
+    .border-indigo-100 { border-color: #e0e7ff; }
+    .border-orange-100 { border-color: #ffedd5; }
+    .border-emerald-100 { border-color: #d1fae5; }
+    .border-amber-100, .border-amber-200 { border-color: #fde68a; }
+    .border-sky-100 { border-color: #e0f2fe; }
+    .border-violet-100 { border-color: #ede9fe; }
+    .border-teal-100 { border-color: #ccfbf1; }
+
+    .ring-2 { box-shadow: 0 0 0 2px #0d9488; }
+    .ring-primary-500, .ring-primary-600 { box-shadow: 0 0 0 2px #0d9488; }
+
+    nav.bottom-nav {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 40;
+      display: flex; border-top: 1px solid #e2e8f0;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(12px);
+    }
+    nav.bottom-nav .nav-btn {
+      flex: 1; padding: 0.75rem 0.25rem; text-align: center;
+      font-size: 0.7rem; color: #64748b; background: transparent; border: none;
+      cursor: pointer;
+    }
+    nav.bottom-nav .nav-btn .text-xl { font-size: 1.25rem; display: block; }
+
+    input, textarea, select {
+      max-width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      font-size: 0.875rem;
+      background: #fff;
+    }
+    button { font-family: inherit; cursor: pointer; }
+    .max-w-3xl { max-width: 48rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+
+    /* هدر داخلی */
+    .app-header > div:first-child {
+      max-width: 48rem; margin: 0 auto; padding: 0.75rem 1rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .app-header > div:first-child > div:first-child {
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .app-header > div:first-child > div:last-child {
+      display: flex; align-items: center; gap: 0.5rem;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-24">
@@ -237,7 +420,7 @@
         </div>
       </div>
 
-      <div id="install-tip" class="card p-3 bg-slate-50 border border-slate-200 text-[11px] text-slate-600 leading-relaxed">
+      <div id="install-tip" class="card p-3 bg-slate-50 border border-slate-200 text-[11px] text-slate-600 leading-relaxed hidden">
         📱 برای مخفی شدن نوار لینک مرورگر: در Chrome منو → <b>Install app / افزودن به صفحه اصلی</b>، بعد از آیکون گوشی باز کن — نه از تب مرورگر.
         <button type="button" onclick="dismissInstallTip()" class="text-primary-600 mr-2">متوجه شدم</button>
       </div>
@@ -1169,6 +1352,10 @@ async function saveToCloud(silent){
     return false;
   }
   setSyncBanner('در حال ذخیره روی ابر…', true);
+  const cloudTimeout = setTimeout(function(){
+    setSyncBanner('ابر دیر جواب داد — داده روی گوشی امن است', true);
+    setTimeout(function(){ setSyncBanner('', false); }, 3000);
+  }, 12000);
   try{
     await db.collection('users').doc(currentUser.uid).set({
       journal: payload(),
@@ -1788,7 +1975,9 @@ function addTodo(){
   const hasRepeat=document.getElementById('todo-repeat').checked;
   const repeat=hasRepeat?document.getElementById('todo-repeat-freq').value:null;
   state.todos.unshift({id:Date.now().toString(),text,done:false,jDate,time:hasDate?document.getElementById('todo-time').value:null,repeat,created:new Date().toISOString()});
-  save();document.getElementById('todo-text').value='';document.getElementById('todo-has-date').checked=false;toggleTodoDate();document.getElementById('todo-repeat').checked=false;toggleTodoRepeat();renderTodos();
+  save();
+  document.getElementById('todo-text').value='';document.getElementById('todo-has-date').checked=false;toggleTodoDate();document.getElementById('todo-repeat').checked=false;toggleTodoRepeat();renderTodos();
+  if(currentUser && cloudReady) saveToCloud(true);
 }
 function todayISODate(){
   const n=new Date();
@@ -3007,6 +3196,7 @@ function saveModules(){
   });
   save(); applyModuleVisibility();
   toast('بخش‌های گزارش ذخیره شد');
+  if(currentUser && cloudReady) saveToCloud(true);
 }
 function saveGoals(){
   state.goals={
@@ -3016,6 +3206,7 @@ function saveGoals(){
   save();
   if(typeof renderHomeGoals==='function') renderHomeGoals();
   toast('اهداف ذخیره شد');
+  if(currentUser && cloudReady) saveToCloud(true);
 }
 function renderHomeGoals(){
   const body=document.getElementById('home-goals-body');
