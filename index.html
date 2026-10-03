@@ -344,6 +344,42 @@
     .app-header > div:first-child > div:last-child {
       display: flex; align-items: center; gap: 0.5rem;
     }
+    /* دفتر خاطرات */
+    .diary-page {
+      background:
+        linear-gradient(#fecaca 1px, transparent 1px) 0 1.75rem / 100% 2rem,
+        linear-gradient(90deg, #fef3c7 0, #fef3c7 2.5rem, transparent 2.5rem),
+        #fffbeb !important;
+      border: 1px solid #fde68a !important;
+      min-height: 16rem;
+      line-height: 2rem !important;
+      padding-right: 3rem !important;
+      resize: vertical;
+      color: #44403c;
+    }
+    .diary-entry {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 1rem;
+      padding: 1rem 1.25rem;
+      margin-bottom: 0.75rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      color: #44403c;
+    }
+    .diary-entry .diary-date {
+      font-size: 11px; color: #92400e; font-weight: 600; margin-bottom: 0.5rem;
+      border-bottom: 1px dashed #fcd34d; padding-bottom: 0.35rem;
+    }
+    .study-warn {
+      background: linear-gradient(90deg, #fef2f2, #fff7ed);
+      border: 1px solid #fecaca;
+      border-radius: 1rem;
+      padding: 0.85rem 1rem;
+      color: #991b1b;
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen pb-24">
@@ -419,6 +455,8 @@
           </div>
         </div>
       </div>
+
+      <div id="home-study-warn" class="hidden"></div>
 
       <div id="install-tip" class="card p-3 bg-slate-50 border border-slate-200 text-[11px] text-slate-600 leading-relaxed hidden">
         📱 برای مخفی شدن نوار لینک مرورگر: در Chrome منو → <b>Install app / افزودن به صفحه اصلی</b>، بعد از آیکون گوشی باز کن — نه از تب مرورگر.
@@ -550,8 +588,11 @@
       </div>
 
       <div class="card p-4 space-y-2">
-        <label class="font-medium">📔 خاطرات امروز</label>
-        <textarea id="r-diary" rows="3" class="w-full border rounded-xl p-3 text-sm" placeholder="امروز چی گذشت؟"></textarea>
+        <div class="flex items-center justify-between">
+          <label class="font-medium">📔 دفتر خاطرات امروز</label>
+          <button type="button" onclick="showPage('diary')" class="text-[11px] text-primary-600">همه خاطرات ←</button>
+        </div>
+        <textarea id="r-diary" rows="10" class="diary-page w-full border-0 rounded-xl p-4 text-sm leading-8" placeholder="امروز چه گذشت؟ هرچه می‌خواهی بنویس…"></textarea>
         <div>
           <label class="text-xs text-slate-500">انرژی / حال</label>
           <div class="flex gap-1 mt-1" id="report-mood">
@@ -692,6 +733,27 @@
       </div>
       <div class="card p-4 space-y-3">
         <input type="text" id="todo-text" class="w-full border rounded-xl p-3" placeholder="کار جدید..." />
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="text-[10px] text-slate-500">اولویت</label>
+            <select id="todo-priority" class="w-full border rounded-lg p-2 text-sm mt-0.5">
+              <option value="normal">عادی</option>
+              <option value="high">بالا 🔴</option>
+              <option value="low">پایین</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-[10px] text-slate-500">دسته</label>
+            <select id="todo-category" class="w-full border rounded-lg p-2 text-sm mt-0.5">
+              <option value="general">عمومی</option>
+              <option value="study">مطالعه</option>
+              <option value="work">کار</option>
+              <option value="personal">شخصی</option>
+              <option value="finance">مالی</option>
+              <option value="health">سلامت</option>
+            </select>
+          </div>
+        </div>
         <div class="flex gap-2 flex-wrap items-center">
           <label class="flex items-center gap-1 text-sm"><input type="checkbox" id="todo-has-date" onchange="toggleTodoDate()" /> تاریخ شمسی</label>
           <div id="todo-date-box" class="hidden flex gap-1 items-center flex-wrap">
@@ -732,6 +794,16 @@
         <input type="search" id="mistakes-search" class="w-full border rounded-xl p-2.5 text-sm" placeholder="جستجو در درس یا متن…" oninput="renderMistakes()" />
       </div>
       <div id="mistakes-list" class="space-y-3"></div>
+    </div>
+
+    <!-- DIARY ARCHIVE -->
+    <div id="page-diary" class="tab-content space-y-4" role="region" aria-label="دفتر خاطرات">
+      <div class="flex items-center justify-between">
+        <button onclick="showPage('home')" class="text-primary-700 font-medium">← بازگشت</button>
+        <h2 class="font-bold text-lg">دفتر خاطرات</h2>
+        <div></div>
+      </div>
+      <div id="diary-list" class="space-y-3"></div>
     </div>
 
     <!-- WEEKLY -->
@@ -1130,13 +1202,17 @@ function persistLocal(data){
   }
   idbSetNow(data);
 }
-function save(){
+function save(opts){
+  opts = opts || {};
   const data=payload();
   persistLocal(data);
-  if(currentUser && cloudReady && typeof navigator!=='undefined' && navigator.onLine!==false){
-    state.cloudAutoSync = true;
+  // autosave تایپ: فقط محلی — ابر فقط در ذخیرهٔ صریح / خروج از صفحه
+  if(!opts.localOnly){
+    if(currentUser && cloudReady && typeof navigator!=='undefined' && navigator.onLine!==false){
+      state.cloudAutoSync = true;
+    }
+    scheduleCloudSave();
   }
-  scheduleCloudSave();
   if(typeof updateLastSaveHint==='function') updateLastSaveHint();
 }
 function scheduleCloudSave(){
@@ -1499,9 +1575,10 @@ function showPage(name){
   document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
   const pg=document.getElementById('page-'+name); if(pg) pg.classList.add('active'); else { console.warn('missing page',name); return; }
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active',b.dataset.page===name));
-  if(name==='home'){goToCurrentMonth();updateStreakUI();updateHeader();renderDailyQuote();renderHomeBudget();renderHomeGoals();renderMistakeReview();renderConsistency();showTipsIfNeeded();applyModuleVisibility();}
+  if(name==='home'){goToCurrentMonth();updateStreakUI();updateHeader();renderDailyQuote();renderHomeBudget();renderHomeGoals();renderMistakeReview();renderConsistency();renderStudyWarn();showTipsIfNeeded();applyModuleVisibility();}
   if(name==='todos')renderTodos();
   if(name==='mistakes')renderMistakes();
+  if(name==='diary')renderDiaryArchive();
   if(name==='weekly'){initYearSelects();renderWeeklyList();loadWeeklyReflectionForm();}
   if(name==='monthly'){initYearSelects(); (function(){const n=new Date();const [,jm]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());const el=document.getElementById('monthly-pdf-month'); if(el && !el.dataset.inited){el.value=jm;el.dataset.inited='1';}})(); renderMonthlyList();}
   if(name==='settings'){
@@ -1807,33 +1884,38 @@ function collectReport(){
 }
 let autoSaveTimer=null;
 function ensureSubjectsFromStudies(studies){ /* بخش درس‌ها حذف شد */ return false; }
-function saveReportSilent(){
+function saveReportSilent(opts){
+  opts = opts || {};
   if(!state.currentReportKey) return false;
   const report=collectReport();
   if(isReportMeaningful(report)){
     state.reports[state.currentReportKey]=report;
     ensureSubjectsFromStudies(report.studies);
   } else {
-    // گزارش خالی را نگه ندار تا تقویم روی روزهای قبلی «گیر» نکند
     delete state.reports[state.currentReportKey];
   }
-  save();
-  updateStreakUI();
-  const st=document.getElementById('auto-save-status');
-  if(st){st.textContent='ذخیره شد ✓';st.classList.remove('text-slate-400');st.classList.add('text-green-600');
-    setTimeout(()=>{st.textContent='ذخیره خودکار';st.classList.add('text-slate-400');st.classList.remove('text-green-600');},1500);
+  // تایپ سریع: فقط محلی، بدون ابر و بدون رندر سنگین
+  save({ localOnly: true });
+  if(!opts.skipUI){
+    const st=document.getElementById('auto-save-status');
+    if(st){st.textContent='ذخیره شد ✓';st.classList.remove('text-slate-400');st.classList.add('text-green-600');
+      setTimeout(()=>{st.textContent='ذخیره خودکار';st.classList.add('text-slate-400');st.classList.remove('text-green-600');},1200);
+    }
   }
   return true;
 }
 function scheduleAutoSave(){
   clearTimeout(autoSaveTimer);
   const st=document.getElementById('auto-save-status');
-  if(st){st.textContent='در حال ذخیره…';st.classList.remove('text-green-600');st.classList.add('text-slate-400');}
-  autoSaveTimer=setTimeout(()=>{saveReportSilent();},600);
+  if(st){st.textContent='…';st.classList.remove('text-green-600');st.classList.add('text-slate-400');}
+  // debounce بلندتر تا تایپ تند هنگ نکند
+  autoSaveTimer=setTimeout(function(){ saveReportSilent({ skipUI: false }); }, 1400);
 }
 function saveReport(){
   if(!state.currentReportKey)return;
-  saveReportSilent();
+  saveReportSilent({ skipUI: true });
+  save(); // همگام ابر
+  if(typeof updateStreakUI==='function') updateStreakUI();
   toast('گزارش ذخیره شد');
   showPage('home');
 }
@@ -1974,9 +2056,16 @@ function addTodo(){
   if(hasDate){const jy=parseInt(document.getElementById('todo-jy').value);const jm=parseInt(document.getElementById('todo-jm').value);const jd=parseInt(document.getElementById('todo-jd').value);if(jy&&jm&&jd)jDate={jy,jm,jd};}
   const hasRepeat=document.getElementById('todo-repeat').checked;
   const repeat=hasRepeat?document.getElementById('todo-repeat-freq').value:null;
-  state.todos.unshift({id:Date.now().toString(),text,done:false,jDate,time:hasDate?document.getElementById('todo-time').value:null,repeat,created:new Date().toISOString()});
+  const priority=(document.getElementById('todo-priority')||{}).value||'normal';
+  const category=(document.getElementById('todo-category')||{}).value||'general';
+  state.todos.unshift({id:Date.now().toString(),text,done:false,jDate,time:hasDate?document.getElementById('todo-time').value:null,repeat,priority,category,created:new Date().toISOString()});
   save();
-  document.getElementById('todo-text').value='';document.getElementById('todo-has-date').checked=false;toggleTodoDate();document.getElementById('todo-repeat').checked=false;toggleTodoRepeat();renderTodos();
+  document.getElementById('todo-text').value='';
+  document.getElementById('todo-has-date').checked=false;toggleTodoDate();
+  document.getElementById('todo-repeat').checked=false;toggleTodoRepeat();
+  const pr=document.getElementById('todo-priority'); if(pr) pr.value='normal';
+  const cat=document.getElementById('todo-category'); if(cat) cat.value='general';
+  renderTodos();
   if(currentUser && cloudReady) saveToCloud(true);
 }
 function todayISODate(){
@@ -2013,12 +2102,17 @@ function toggleTodo(id){
 function deleteTodo(id){state.todos=state.todos.filter(x=>x.id!==id);save();renderTodos();}
 function editTodo(id){
   const t=state.todos.find(x=>x.id===id); if(!t) return;
-  const nt=prompt('ویرایش کار:', t.text);
+  const nt=prompt('ویرایش متن کار:', t.text);
   if(nt===null) return;
   const trimmed=nt.trim();
   if(!trimmed){ toast('متن خالی مجاز نیست', true); return; }
   t.text=trimmed;
+  const pr=prompt('اولویت: high / normal / low', t.priority||'normal');
+  if(pr && ['high','normal','low'].indexOf(pr.trim())>=0) t.priority=pr.trim();
+  const cat=prompt('دسته: general/study/work/personal/finance/health', t.category||'general');
+  if(cat && TODO_CAT_LABEL[cat.trim()]) t.category=cat.trim();
   save(); renderTodos(); toast('ویرایش شد');
+  if(currentUser && cloudReady) saveToCloud(true);
 }
 function renderTodos(){
   resetRepeatingTodos();
@@ -2067,7 +2161,7 @@ function renderMistakes(){
 
 /* SUMMARY */
 function gatherRange(jy, jm, startD, endD) {
-  let studyMin=0, nonStudy=0, exercise=0, trade=0, tests=0, days=0;
+  let studyMin=0, nonStudy=0, exercise=0, trade=0, tests=0, days=0, studyDays=0;
   let income=0, expense=0, savings=0;
   let sleepH=0, sleepQ=0, sleepDays=0, calories=0, calDays=0;
   const bySubject = {};
@@ -2076,9 +2170,16 @@ function gatherRange(jy, jm, startD, endD) {
     const r = state.reports[toKey(gy, gm, gd)];
     if (!r) continue;
     days++;
-    studyMin += getStudyMinutes(r);
-    nonStudy += (r.nonStudy || 0);
-    exercise += (r.exercise || 0);
+    const sm = getStudyMinutes(r);
+    if (sm > 0) studyDays++;
+    studyMin += sm;
+    // جمع غیردرسی از ردیف‌ها یا فیلد قدیمی
+    if (r.nonStudyItems && r.nonStudyItems.length) {
+      nonStudy += r.nonStudyItems.reduce((s,it)=>s+(it.amount||0),0);
+    } else nonStudy += (r.nonStudy || 0);
+    if (r.exerciseItems && r.exerciseItems.length) {
+      exercise += r.exerciseItems.reduce((s,it)=>s+(it.amount||0),0);
+    } else exercise += (r.exercise || 0);
     trade += getTradeMinutes(r);
     tests += getTestCount(r);
     income += (r.income || 0);
@@ -2105,7 +2206,7 @@ function gatherRange(jy, jm, startD, endD) {
   }
   if(span<1) span=1;
   return {
-    studyMin, nonStudy, exercise, trade, tests, days, income, expense, savings,
+    studyMin, nonStudy, exercise, trade, tests, days, studyDays, income, expense, savings,
     spanDays: span,
     avgStudy: Math.round(studyMin / span),
     avgNon: Math.round(nonStudy / span),
@@ -2865,7 +2966,7 @@ function renderWeeklyList() {
           <tr class="border-b border-slate-50"><td class="py-1.5">تست</td>${weekData.map(w=>`<td class="text-center">${w.data.tests}</td>`).join('')}</tr>
           <tr class="border-b border-slate-50"><td class="py-1.5">ورزش (د)</td>${weekData.map(w=>`<td class="text-center">${w.data.exercise}</td>`).join('')}</tr>
           <tr class="border-b border-slate-50"><td class="py-1.5">ترید (د)</td>${weekData.map(w=>`<td class="text-center">${w.data.trade}</td>`).join('')}</tr>
-          <tr><td class="py-1.5">روز ثبت</td>${weekData.map(w=>`<td class="text-center">${w.data.days}</td>`).join('')}</tr>
+          <tr><td class="py-1.5">روز مطالعه</td>${weekData.map(w=>`<td class="text-center">${w.data.studyDays||0}</td>`).join('')}</tr>
         </tbody>
       </table>
     </div>`;
@@ -2881,7 +2982,7 @@ function renderWeeklyList() {
         <div class="font-medium">${w.label} (${w.start} تا ${w.end})</div>
         ${trendBadge(pct)}
       </div>
-      <div class="text-xs text-slate-500 mt-1">مطالعه: ${w.data.studyMin} دقیقه • تست: ${w.data.tests} • روز: ${w.data.days}</div>
+      <div class="text-xs text-slate-500 mt-1">مطالعه: ${w.data.studyMin} دقیقه • تست: ${w.data.tests} • روز مطالعه: ${w.data.studyDays||0}</div>
       <div class="mt-2 h-1.5 bg-slate-100 rounded-full overflow-hidden">
         <div class="h-full bg-primary-500 rounded-full" style="width:${Math.round((w.data.studyMin/maxStudy)*100)}%"></div>
       </div>
@@ -2964,7 +3065,7 @@ function renderMonthlyList() {
           <th class="py-1 text-center">مطالعه</th>
           <th class="py-1 text-center">Δ٪</th>
           <th class="py-1 text-center">تست</th>
-          <th class="py-1 text-center">روز</th>
+          <th class="py-1 text-center">روز مطالعه</th>
         </tr></thead>
         <tbody>
           ${monthsData.map((m,i) => {
@@ -2975,7 +3076,7 @@ function renderMonthlyList() {
               <td class="text-center">${m.data.studyMin}</td>
               <td class="text-center">${trendBadge(pct)}</td>
               <td class="text-center">${m.data.tests}</td>
-              <td class="text-center">${m.data.days}</td>
+              <td class="text-center">${m.data.studyDays||0}</td>
             </tr>`;
           }).join('')}
         </tbody>
@@ -2992,7 +3093,7 @@ function renderMonthlyList() {
     return `
     <button onclick="showMonthDetail(${jy},${m.jm},${i})" class="card p-3 text-center hover:bg-primary-50">
       <div class="font-medium flex items-center justify-center gap-1">${m.name} ${trendBadge(pct)}</div>
-      <div class="text-xs text-slate-500">${m.data.studyMin} دقیقه • ${m.data.days} روز</div>
+      <div class="text-xs text-slate-500">${m.data.studyMin} دقیقه • ${m.data.studyDays||0} روز مطالعه</div>
       ${finLine}
       <div class="mt-1.5 h-1 bg-slate-100 rounded-full overflow-hidden">
         <div class="h-full bg-primary-500 rounded-full" style="width:${Math.round((m.data.studyMin/maxStudy)*100)}%"></div>
@@ -3414,6 +3515,61 @@ function restoreFromSafety(){
   }catch(e){ toast('خطا در بازیابی', true); }
 }
 
+function renderDiaryArchive(){
+  const box=document.getElementById('diary-list');
+  if(!box) return;
+  const items=[];
+  Object.keys(state.reports||{}).sort().reverse().forEach(function(key){
+    const r=state.reports[key];
+    const text=(r&&r.diary||'').trim();
+    if(!text) return;
+    const parts=key.split('-').map(Number);
+    const both=formatBoth(parts[0],parts[1],parts[2]);
+    items.push({key:key, text:text, jalali:both.jalali, mood:r.mood||0});
+  });
+  if(!items.length){
+    box.innerHTML='<div class="card p-6 text-center text-slate-400 text-sm">هنوز خاطره‌ای نوشته نشده. در گزارش روزانه بنویس.</div>';
+    return;
+  }
+  const moodIcon={1:'😫',2:'😕',3:'😐',4:'🙂',5:'🔥'};
+  box.innerHTML=items.map(function(it){
+    return '<div class="diary-entry"><div class="diary-date">'+escapeHtml(it.jalali)+(it.mood?' · '+(moodIcon[it.mood]||''):'')+'</div>'+escapeHtml(it.text)+'</div>';
+  }).join('');
+}
+function daysSinceLastStudy(){
+  const n=new Date();
+  for(let i=0;i<60;i++){
+    const d=new Date(n.getFullYear(), n.getMonth(), n.getDate()-i);
+    const key=toKey(d.getFullYear(), d.getMonth()+1, d.getDate());
+    const r=state.reports[key];
+    if(r && getStudyMinutes(r)>0) return i;
+  }
+  return 99;
+}
+function renderStudyWarn(){
+  const el=document.getElementById('home-study-warn');
+  if(!el) return;
+  const gap=daysSinceLastStudy();
+  const av=typeof calcAverages==='function' ? calcAverages() : null;
+  const weekAvg = av && av.week ? (av.week.calendarAvg||av.week.study||0) : 0;
+  // calcAverages structure may differ - safe fallback
+  let weekStudy = 0;
+  try {
+    const n=new Date(); const [jy,jm,jd]=gregorianToJalali(n.getFullYear(),n.getMonth()+1,n.getDate());
+    const wb=currentWeekBounds(jd);
+    weekStudy = gatherRange(jy,jm,wb.start,wb.end).studyMin;
+  } catch(e){}
+  let msg='';
+  if(gap>=7) msg='⚠️ '+gap+' روز است مطالعه درسی ثبت نکرده‌ای. حتی ۳۰ دقیقه امروز کافی است تا زنجیره برگردد.';
+  else if(gap>=3) msg='⚠️ '+gap+' روز بدون مطالعه درسی. یک جلسه کوتاه امروز مانع افت عادت می‌شود.';
+  else if(gap>=2) msg='📭 دیروز مطالعه ثبت نشده. امروز را از دست نده.';
+  else if(weekStudy>0 && weekStudy<120 && gap===0) msg='📉 مطالعه این هفته کم است ('+weekStudy+' دقیقه). اگر می‌توانی کمی به هدف نزدیک‌تر شو.';
+  if(!msg){ el.classList.add('hidden'); el.innerHTML=''; return; }
+  el.className='study-warn';
+  el.innerHTML=msg;
+  el.classList.remove('hidden');
+}
+
 /* ========== G. BOOT ========== */
 
 load();
@@ -3443,13 +3599,18 @@ showPage('home');
 setupAuth();
 // ذخیره خودکار قبل از بستن/مخفی شدن صفحه
 window.addEventListener('beforeunload', ()=>{
-  if(state.currentReportKey && document.getElementById('page-report')&&document.getElementById('page-report').classList.contains('active')){
-    try{saveReportSilent();}catch(e){}
-  }
+  try{
+    if(state.currentReportKey) saveReportSilent({ skipUI: true });
+    persistLocal(payload());
+  }catch(e){}
 });
 document.addEventListener('visibilitychange', ()=>{
-  if(document.visibilityState==='hidden' && state.currentReportKey && document.getElementById('page-report')&&document.getElementById('page-report').classList.contains('active')){
-    try{saveReportSilent();}catch(e){}
+  if(document.visibilityState==='hidden'){
+    try{
+      if(state.currentReportKey) saveReportSilent({ skipUI: true });
+      save(); // با ابر
+      if(typeof updateStreakUI==='function') updateStreakUI();
+    }catch(e){}
   }
 });
 
