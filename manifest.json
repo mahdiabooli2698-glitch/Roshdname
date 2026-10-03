@@ -3,15 +3,24 @@
   "name": "رُشدنامه | دفتر رشد شخصی",
   "short_name": "رُشدنامه",
   "description": "دفتر رشد شخصی — مطالعه، ورزش، مالی و برنامه‌ریزی",
-  "start_url": "./index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait-primary",
   "background_color": "#0f766e",
   "theme_color": "#0f766e",
   "lang": "fa",
   "dir": "rtl",
-  "categories": ["education", "lifestyle", "productivity"],
+  "prefer_related_applications": false,
+  "categories": [
+    "education",
+    "lifestyle",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "./icon-72.png",
